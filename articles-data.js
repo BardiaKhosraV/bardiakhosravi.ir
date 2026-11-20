@@ -5,28 +5,28 @@ window.SITE_ARTICLES = [
     id: 'famous-persian-couplets',
     number: '01',
     badge: '01 / LITERATURE',
-    category: 'ادبیات فارسی',
+    category: 'Persian Literature',
     categoryKey: 'literature',
-    format: 'گزارش تحلیلی',
-    title: 'پنجاه بیت ماندگار زبان فارسی',
-    subtitle: 'از پرکاربردترین ضرب‌المثل‌ها تا غلط‌های مشهور',
+    format: 'Analytical Guide · Persian',
+    title: 'Fifty Timeless Persian Couplets',
+    subtitle: 'From everyday proverbs to famous misreadings',
     description:
-      'مروری ساختاریافته بر ۵۰ بیت پرکاربرد و ضرب‌المثل‌گونه از سعدی، صائب، حافظ، مولانا و فردوسی، همراه با نمودار آماری و بررسی ابیاتی که امروزه اشتباه خوانده می‌شوند.',
+      'A structured exploration of 50 widely quoted Persian couplets by Saadi, Saeb, Hafez, Rumi, and Ferdowsi — complete with proverb frequency charts and commonly misread verses.',
     url: '/famous-persian-couplets.html',
-    tags: ['شعر فارسی', 'ضرب‌المثل', 'غلط‌های مشهور']
+    tags: ['Persian Poetry', 'Proverbs', 'Literary Analysis']
   },
   {
     id: 'shahnameh',
     number: '02',
     badge: '02 / CLASSICS',
-    category: 'متون کلاسیک',
+    category: 'Classical Texts',
     categoryKey: 'classics',
-    format: 'متن کامل',
-    title: 'شاهنامه فردوسی',
-    subtitle: 'متن کامل، ساخت‌یافته و آرایه‌شده',
+    format: 'Complete Edition · Persian',
+    title: 'Shahnameh of Ferdowsi',
+    subtitle: 'Complete, structured & annotated web edition',
     description:
-      'نسخه کامل و ساختاریافته شاهنامه حکیم ابوالقاسم فردوسی با صفحه‌آرایی خوانا و آرایه‌شده برای مطالعه و مرور داستان‌های حماسی در وب.',
+      'The complete epic text of Hakim Abolqasem Ferdowsi’s Shahnameh, organized with clean typography and readable structure for effortless browsing on the web.',
     url: '/shahnameh.html',
-    tags: ['فردوسی', 'شاهنامه', 'ادبیات حماسی']
+    tags: ['Ferdowsi', 'Shahnameh', 'Epic Poetry']
   }
 ];

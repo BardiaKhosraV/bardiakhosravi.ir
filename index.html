@@ -11,13 +11,25 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Instrument+Serif:ital@1&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
     <script type="module" crossorigin src="/assets/index-v7Kq2mXa.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-v7Zr9pLd.css">
     <style>
-      .bk-fa {
-        font-family: 'Vazirmatn', 'Almarai', -apple-system, BlinkMacSystemFont, sans-serif;
+      img[src="/photo.webp"] { filter: none !important; }
+      /* Disable the message submission form inside the Connect modal while keeping direct Email & LinkedIn intact */
+      .bg-\[\#121212\] form {
+        display: none !important;
       }
+      .bk-connect-note {
+        margin-top: 0.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.78rem;
+        color: #9ca3af;
+        line-height: 1.6;
+      }
+
+      /* Latest Writings section matching the dark ivory visual system */
       #writings {
         background-color: #000000;
         position: relative;
@@ -76,13 +88,9 @@
       }
       @media (min-width: 768px) {
         .bk-writings-header {
-          flex-direction: row-reverse;
+          flex-direction: row;
           align-items: flex-end;
         }
-      }
-      .bk-writings-heading-block {
-        direction: rtl;
-        text-align: right;
       }
       .bk-writings-kicker {
         display: inline-flex;
@@ -103,14 +111,15 @@
       }
       .bk-writings-title {
         color: #e1e0cc;
-        font-size: 1.75rem;
-        line-height: 1.3;
-        font-weight: 500;
+        font-size: 1.85rem;
+        line-height: 1.15;
+        font-weight: 400;
+        letter-spacing: -0.02em;
         margin: 0;
       }
       @media (min-width: 768px) {
         .bk-writings-title {
-          font-size: 2.35rem;
+          font-size: 2.65rem;
         }
       }
       .bk-writings-title-serif {
@@ -118,14 +127,14 @@
         font-style: italic;
         color: #dedbc8;
         font-weight: 400;
-        margin-right: 0.5rem;
-        font-size: 1.05em;
+        margin-left: 0.2rem;
+        font-size: 1.08em;
       }
       .bk-writings-sub {
         color: rgba(222, 219, 200, 0.72);
-        font-size: 0.9rem;
-        line-height: 1.8;
-        margin: 0.6rem 0 0;
+        font-size: 0.92rem;
+        line-height: 1.65;
+        margin: 0.65rem 0 0;
         max-width: 34rem;
       }
       .bk-archive-btn {
@@ -134,15 +143,14 @@
         gap: 0.75rem;
         background-color: #dedbc8;
         color: #000000;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.875rem;
-        padding: 0.45rem 0.5rem 0.45rem 1.25rem;
+        padding: 0.45rem 0.5rem 0.45rem 1.3rem;
         border-radius: 9999px;
         text-decoration: none;
         transition: background-color 0.25s ease, gap 0.25s ease, transform 0.25s ease;
         white-space: nowrap;
         flex-shrink: 0;
-        direction: rtl;
       }
       .bk-archive-btn:hover {
         background-color: #eae7d5;
@@ -168,7 +176,6 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 1rem;
-        direction: rtl;
       }
       @media (min-width: 768px) {
         .bk-writings-grid {
@@ -209,10 +216,10 @@
         border: 1px solid rgba(255, 255, 255, 0.06);
         padding: 0.25rem 0.6rem;
         border-radius: 0.4rem;
-        direction: ltr;
       }
       .bk-card-cat {
-        font-size: 0.72rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.68rem;
         color: #9ca3af;
         background: rgba(255, 255, 255, 0.05);
         padding: 0.25rem 0.65rem;
@@ -220,20 +227,21 @@
       }
       .bk-card-title {
         color: #e1e0cc;
-        font-size: 1.2rem;
-        font-weight: 600;
-        line-height: 1.5;
-        margin: 0 0 0.35rem;
+        font-size: 1.25rem;
+        font-weight: 500;
+        line-height: 1.35;
+        letter-spacing: -0.015em;
+        margin: 0 0 0.3rem;
       }
       .bk-card-subtitle {
         color: rgba(222, 219, 200, 0.78);
         font-size: 0.85rem;
-        margin: 0 0 0.85rem;
+        margin: 0 0 0.8rem;
       }
       .bk-card-desc {
         color: #9ca3af;
-        font-size: 0.85rem;
-        line-height: 1.85;
+        font-size: 0.84rem;
+        line-height: 1.65;
         margin: 0;
       }
       .bk-card-footer {
@@ -250,7 +258,7 @@
         align-items: center;
         gap: 0.4rem;
         color: #dedbc8;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 500;
         transition: color 0.2s ease;
       }
@@ -258,7 +266,8 @@
         color: #ffffff;
       }
       .bk-card-meta {
-        font-size: 0.72rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.68rem;
         color: #6b7280;
       }
     </style>
@@ -273,22 +282,22 @@
             id: 'famous-persian-couplets',
             number: '01',
             badge: '01 / LITERATURE',
-            category: 'ادبیات فارسی',
-            format: 'گزارش تحلیلی',
-            title: 'پنجاه بیت ماندگار زبان فارسی',
-            subtitle: 'از پرکاربردترین ضرب‌المثل‌ها تا غلط‌های مشهور',
-            description: 'مروری ساختاریافته بر ۵۰ بیت پرکاربرد و ضرب‌المثل‌گونه از سعدی، صائب، حافظ، مولانا و فردوسی، همراه با نمودار آماری و بررسی ابیاتی که امروزه اشتباه خوانده می‌شوند.',
+            category: 'Persian Literature',
+            format: 'Analytical Guide · Persian',
+            title: 'Fifty Timeless Persian Couplets',
+            subtitle: 'From everyday proverbs to famous misreadings',
+            description: 'A structured exploration of 50 widely quoted Persian couplets by Saadi, Saeb, Hafez, Rumi, and Ferdowsi — complete with proverb frequency charts and commonly misread verses.',
             url: '/famous-persian-couplets.html'
           },
           {
             id: 'shahnameh',
             number: '02',
             badge: '02 / CLASSICS',
-            category: 'متون کلاسیک',
-            format: 'متن کامل',
-            title: 'شاهنامه فردوسی',
-            subtitle: 'متن کامل، ساخت‌یافته و آرایه‌شده',
-            description: 'نسخه کامل و ساختاریافته شاهنامه حکیم ابوالقاسم فردوسی با صفحه‌آرایی خوانا و آرایه‌شده برای مطالعه و مرور داستان‌های حماسی در وب.',
+            category: 'Classical Texts',
+            format: 'Complete Edition · Persian',
+            title: 'Shahnameh of Ferdowsi',
+            subtitle: 'Complete, structured & annotated web edition',
+            description: 'The complete epic text of Hakim Abolqasem Ferdowsi’s Shahnameh, organized with clean typography and readable structure for effortless browsing on the web.',
             url: '/shahnameh.html'
           }
         ];
@@ -308,11 +317,11 @@
 
           var cardsHtml = articles.map(function (item) {
             return (
-              '<a class="bk-article-card bk-fa" href="' + escapeHtml(item.url) + '">' +
+              '<a class="bk-article-card" href="' + escapeHtml(item.url) + '">' +
                 '<div>' +
                   '<div class="bk-card-top">' +
-                    '<span class="bk-card-cat">' + escapeHtml(item.category) + '</span>' +
                     '<span class="bk-card-badge">' + escapeHtml(item.badge) + '</span>' +
+                    '<span class="bk-card-cat">' + escapeHtml(item.category) + '</span>' +
                   '</div>' +
                   '<h3 class="bk-card-title">' + escapeHtml(item.title) + '</h3>' +
                   (item.subtitle ? '<p class="bk-card-subtitle">' + escapeHtml(item.subtitle) + '</p>' : '') +
@@ -320,7 +329,7 @@
                 '</div>' +
                 '<div class="bk-card-footer">' +
                   '<span class="bk-card-cta">' +
-                    '<span>مطالعه مطلب</span>' +
+                    '<span>Read article</span>' +
                     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>' +
                   '</span>' +
                   '<span class="bk-card-meta">' + escapeHtml(item.format || 'HTML') + '</span>' +
@@ -331,20 +340,20 @@
 
           var section = document.createElement('section');
           section.id = 'writings';
-          section.setAttribute('aria-label', 'آخرین مطالب');
+          section.setAttribute('aria-label', 'Latest Writings');
           section.innerHTML =
             '<div class="bk-writings-shell">' +
               '<div class="bk-writings-glow" aria-hidden="true"></div>' +
               '<div class="bk-writings-header">' +
-                '<div class="bk-writings-heading-block bk-fa">' +
+                '<div>' +
                   '<div class="bk-writings-kicker"><span class="bk-writings-dot"></span><span>LATEST WRITINGS · ARCHIVE</span></div>' +
-                  '<h2 class="bk-writings-title">آخرین مطالب <span class="bk-writings-title-serif">Writings</span></h2>' +
-                  '<p class="bk-writings-sub">یادداشت‌ها، پژوهش‌های ادبی و صفحه‌های خواندنی منتشرشده روی سایت.</p>' +
+                  '<h2 class="bk-writings-title">Latest <span class="bk-writings-title-serif">Writings</span></h2>' +
+                  '<p class="bk-writings-sub">Essays, literary studies, and standalone web editions published on this site.</p>' +
                 '</div>' +
-                '<a class="bk-archive-btn bk-fa" href="/articles.html">' +
-                  '<span>فهرست کامل مطالب</span>' +
+                '<a class="bk-archive-btn" href="/articles.html">' +
+                  '<span>View All Articles</span>' +
                   '<span class="bk-archive-btn-icon" aria-hidden="true">' +
-                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>' +
+                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
                   '</span>' +
                 '</a>' +
               '</div>' +
@@ -353,11 +362,23 @@
           return section;
         }
 
-        function mountWritings() {
-          var footer = document.querySelector('#root footer');
-          if (!footer) return false;
+        function enhanceConnectModal() {
+          var forms = document.querySelectorAll('#root form');
+          forms.forEach(function (form) {
+            var modal = form.closest('.bg-\\[\\#121212\\]');
+            if (!modal) return;
+            if (!modal.querySelector('.bk-connect-note')) {
+              var note = document.createElement('p');
+              note.className = 'bk-connect-note';
+              note.textContent = 'Direct email or LinkedIn is the best way to reach me.';
+              form.parentNode.insertBefore(note, form);
+            }
+          });
+        }
 
-          if (!document.getElementById('writings')) {
+        function mountEnhancements() {
+          var footer = document.querySelector('#root footer');
+          if (footer && !document.getElementById('writings')) {
             footer.parentNode.insertBefore(buildWritingsSection(), footer);
           }
 
@@ -383,17 +404,12 @@
             }
           }
 
-          return true;
+          enhanceConnectModal();
         }
 
-        if (!mountWritings()) {
-          var observer = new MutationObserver(function () {
-            if (mountWritings()) {
-              observer.disconnect();
-            }
-          });
-          observer.observe(document.getElementById('root'), { childList: true, subtree: true });
-        }
+        mountEnhancements();
+        var observer = new MutationObserver(mountEnhancements);
+        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
       })();
     </script>
   </body>
