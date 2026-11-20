@@ -510,3 +510,25 @@ html.night .sm-nav { background: rgba(10, 14, 22, .96); }
 .sm-end .row { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin-top: 1.2rem; }
 .sm-ghost { border: 1px solid var(--gline); background: var(--pc); color: var(--ink2); border-radius: 6px; padding: .7rem 1.4rem; font-size: .92rem; font-weight: 600; }
 #smBtn { color: var(--gold); }
+
+/* Cover Resume Button (last read couplet) */
+.cover-resume {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  margin: 0 auto 1rem;
+  padding: .5rem 1.05rem;
+  max-width: 100%;
+  background: var(--ms-folio);
+  border: 1.5px solid var(--ms-gold);
+  border-radius: 8px;
+  color: var(--ms-ink);
+  font-size: .84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.cover-resume:hover { background: var(--ms-parchment); border-color: var(--ms-lapis); }
+.cover-resume b { color: var(--ms-lapis); }
+.cover-resume small { color: var(--ms-mut); font-weight: 400; }

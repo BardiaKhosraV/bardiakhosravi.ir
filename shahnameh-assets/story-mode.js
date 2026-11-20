@@ -225,12 +225,56 @@
   var timer = null, speed = 6000, playing = false;
 
   function $(id) { return document.getElementById(id); }
-  function open(v) { root.classList.add("on"); document.body.classList.add("sm-lock"); state.v = v || "home"; render(); root.scrollTop = 0; }
+  var syncingHash = false;
+  function hashForState() {
+    if (!root.classList.contains("on")) return "";
+    if (state.v === "reader") return "#read/" + state.ei + "/" + state.k + "/" + state.bi;
+    if (state.v === "ep") return "#ep/" + state.ei;
+    if (state.v === "bm") return "#bookmarks";
+    return "#story";
+  }
+  function syncHistory(mode) {
+    if (syncingHash) return;
+    var h = hashForState();
+    var target = h || (location.pathname + location.search);
+    if (location.hash === h) return;
+    try {
+      if (mode === "replace") history.replaceState(null, "", target);
+      else history.pushState(null, "", target);
+    } catch (e) {
+      if (h) location.hash = h;
+    }
+  }
+  function saveReadingPos() {
+    if (state.v === "reader" && EP[state.ei]) {
+      var si = EP[state.ei].sc[state.k];
+      if (si != null) {
+        last = { si: si, bi: state.bi, ei: state.ei, k: state.k };
+        store.set("sm-last", last);
+        updateCoverResume();
+      }
+    }
+  }
+  function open(v, fromHash) {
+    root.classList.add("on");
+    document.body.classList.add("sm-lock");
+    state.v = v || "home";
+    render();
+    root.scrollTop = 0;
+    if (!fromHash) syncHistory("push");
+  }
   function openEpByTitle(title) {
     var idx = EP.findIndex(function (e) { return e.t === title; });
     if (idx >= 0) { state.ei = idx; open("ep"); } else { open("home"); }
   }
-  function close() { stop(); root.classList.remove("on"); document.body.classList.remove("sm-lock"); }
+  function close(fromHash) {
+    saveReadingPos();
+    stop();
+    root.classList.remove("on");
+    document.body.classList.remove("sm-lock");
+    updateCoverResume();
+    if (!fromHash) syncHistory("push");
+  }
   function stop() { playing = false; clearInterval(timer); timer = null; }
   function render() { if (state.v === "home") home(); else if (state.v === "bm") bookmarks(); else if (state.v === "ep") episode(); else readerShell(); }
   function nav(active) {
@@ -388,13 +432,25 @@
     if (nb === state.bi) return;
     state.bi = nb;
     if (nb > (far[si] || 0)) { far[si] = nb; store.set("sm-far", far); touch(); }
-    last = { si: si, bi: nb }; store.set("sm-last", last);
+    last = { si: si, bi: nb, ei: state.ei, k: state.k }; store.set("sm-last", last);
     showCouplet(d);
+    syncHistory("replace");
     if (playing) schedule();
   }
   function schedule() { clearInterval(timer); timer = setInterval(function () { go(1); }, speed); }
-  function playAt(ei, k, bi) {
-    stop(); state.ei = ei; state.k = k; state.bi = bi; state.v = "reader"; readerShell(); root.scrollTop = 0;
+  function playAt(ei, k, bi, fromHash) {
+    stop();
+    state.ei = ei; state.k = k; state.bi = bi; state.v = "reader";
+    if (!root.classList.contains("on")) {
+      root.classList.add("on");
+      document.body.classList.add("sm-lock");
+    }
+    var si = EP[ei].sc[k];
+    last = { si: si, bi: bi, ei: ei, k: k };
+    store.set("sm-last", last);
+    readerShell();
+    root.scrollTop = 0;
+    if (!fromHash) syncHistory("push");
   }
   function play(k) {
     var si = EP[state.ei].sc[k];
@@ -406,7 +462,18 @@
     if (i >= 0) l.splice(i, 1); else l.push({ s: si, b: state.bi });
     store.set("sh-bm", l); sync(S[si].b.length, si);
   }
-  function showView(v) { stop(); state.v = v; render(); root.scrollTop = 0; }
+  function showView(v, fromHash) {
+    saveReadingPos();
+    stop();
+    state.v = v;
+    if (!root.classList.contains("on")) {
+      root.classList.add("on");
+      document.body.classList.add("sm-lock");
+    }
+    render();
+    root.scrollTop = 0;
+    if (!fromHash) syncHistory("push");
+  }
 
   root.addEventListener("click", function (ev) {
     var t = ev.target.closest("button"); if (!t) return;
@@ -492,4 +559,80 @@
     acts.insertBefore(b2, acts.firstChild);
     if (sb) { sb.textContent = "متن کامل"; sb.className = "btn ghost"; }
   }
+
+  /* ---- Cover Resume Button & Hash/History State Restoration ---- */
+  var coverResumeBtn = null;
+  function updateCoverResume() {
+    if (!coverInner) return;
+    var ei = last && S[last.si] ? epOf(last.si) : -1;
+    if (ei < 0) {
+      if (coverResumeBtn) coverResumeBtn.style.display = "none";
+      return;
+    }
+    if (!coverResumeBtn) {
+      coverResumeBtn = document.createElement("button");
+      coverResumeBtn.type = "button";
+      coverResumeBtn.className = "cover-resume";
+      coverResumeBtn.addEventListener("click", function () {
+        var eiNow = last && S[last.si] ? epOf(last.si) : -1;
+        if (eiNow >= 0) {
+          var kNow = EP[eiNow].sc.indexOf(last.si);
+          if (kNow >= 0) {
+            var biNow = Math.min(last.bi || 0, Math.max(0, S[last.si].b.length - 1));
+            playAt(eiNow, kNow, biNow);
+          }
+        }
+      });
+      var actsEl = coverInner.querySelector(".cover-actions");
+      if (actsEl) coverInner.insertBefore(coverResumeBtn, actsEl);
+    }
+    var scObj = S[last.si];
+    var biNum = Math.min((last.bi || 0) + 1, scObj.b.length);
+    coverResumeBtn.style.display = "inline-flex";
+    coverResumeBtn.innerHTML = ic("openbook") +
+      '<span>ادامه از آخرین بیت: <b>' + esc(EP[ei].dt) + '</b> <small>(' + esc(scObj.t) + ' — بیت ' + fa(biNum) + ')</small></span>';
+  }
+  updateCoverResume();
+
+  function applyHash() {
+    var h = location.hash || "";
+    syncingHash = true;
+    try {
+      if (h.indexOf("#read/") === 0) {
+        var p = h.slice(6).split("/");
+        var ei = parseInt(p[0], 10), k = parseInt(p[1], 10), bi = parseInt(p[2] || "0", 10);
+        if (!isNaN(ei) && EP[ei] && !isNaN(k) && EP[ei].sc[k] != null) {
+          var maxBi = S[EP[ei].sc[k]].b.length;
+          playAt(ei, k, Math.max(0, Math.min(isNaN(bi) ? 0 : bi, maxBi)), true);
+          return;
+        }
+      } else if (h.indexOf("#ep/") === 0) {
+        var ei2 = parseInt(h.slice(4), 10);
+        if (!isNaN(ei2) && EP[ei2]) {
+          state.ei = ei2;
+          open("ep", true);
+          return;
+        }
+      } else if (h === "#bookmarks") {
+        open("bm", true);
+        return;
+      } else if (h === "#story") {
+        open("home", true);
+        return;
+      }
+      if (root.classList.contains("on")) close(true);
+    } finally {
+      syncingHash = false;
+    }
+  }
+
+  window.addEventListener("popstate", applyHash);
+  window.addEventListener("hashchange", applyHash);
+  window.addEventListener("pagehide", saveReadingPos);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") saveReadingPos();
+  });
+
+  /* Restore exact route on load if URL has a hash */
+  if (location.hash) applyHash();
 })();
