@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>فهرست مطالب — Bardia Khosravi</title>
+    <meta name="description" content="فهرست کامل مطالب، یادداشت‌ها و صفحه‌های منتشرشده در وب‌سایت بردیا خسروی." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #000000;
+        --surface: #101010;
+        --card: #1c1c1c;
+        --card-hover: #242424;
+        --primary: #dedbc8;
+        --heading: #e1e0cc;
+        --text: #d1d5db;
+        --muted: #9ca3af;
+        --subtle: #6b7280;
+        --border: rgba(255, 255, 255, 0.06);
+        --border-hover: rgba(222, 219, 200, 0.42);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        background-color: var(--bg);
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: var(--bg);
+        color: var(--heading);
+        font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      ::selection {
+        background-color: var(--primary);
+        color: #000000;
+      }
+
+      /* Floating top navigation matching homepage */
+      .top-nav-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        justify-content: center;
+        padding: 0 1rem;
+        pointer-events: none;
+      }
+
+      .top-nav {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-top: none;
+        border-radius: 0 0 1.5rem 1.5rem;
+        padding: 0.65rem 1.4rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      }
+
+      @media (min-width: 640px) {
+        .top-nav {
+          padding: 0.7rem 2rem;
+          gap: 2rem;
+        }
+      }
+
+      .top-nav a {
+        color: rgba(225, 224, 204, 0.78);
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 400;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .top-nav a:hover,
+      .top-nav a.active {
+        color: #e1e0cc;
+      }
+
+      .top-nav a.active {
+        font-weight: 600;
+      }
+
+      .nav-brand {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        letter-spacing: 0.06em;
+        direction: ltr;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 2.25rem 1rem 5rem;
+      }
+
+      @media (min-width: 768px) {
+        main {
+          padding: 3.5rem 1.5rem 6rem;
+        }
+      }
+
+      /* Hero panel matching homepage #101010 container */
+      .archive-hero {
+        position: relative;
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        padding: 2.25rem 1.5rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      @media (min-width: 768px) {
+        .archive-hero {
+          border-radius: 2rem;
+          padding: 3.5rem 3.25rem;
+        }
+      }
+
+      .hero-glow {
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 560px;
+        height: 240px;
+        background: rgba(222, 219, 200, 0.045);
+        filter: blur(120px);
+        border-radius: 9999px;
+        pointer-events: none;
+      }
+
+      .hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(222, 219, 200, 0.85);
+        direction: ltr;
+      }
+
+      .kicker-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background-color: var(--primary);
+      }
+
+      .count-pill {
+        font-size: 0.75rem;
+        color: var(--primary);
+        background: rgba(222, 219, 200, 0.08);
+        border: 1px solid rgba(222, 219, 200, 0.16);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+      }
+
+      .hero-title {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 0.75rem;
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--heading);
+      }
+
+      @media (min-width: 768px) {
+        .hero-title {
+          font-size: 2.85rem;
+        }
+      }
+
+      .hero-title-serif {
+        font-family: 'Instrument Serif', serif;
+        font-style: italic;
+        font-weight: 400;
+        color: var(--primary);
+        margin-right: 0.5rem;
+        font-size: 1.08em;
+      }
+
+      .hero-desc {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        max-width: 40rem;
+        color: rgba(222, 219, 200, 0.76);
+        font-size: 0.95rem;
+        line-height: 1.85;
+      }
+
+      /* Controls bar: search + category pills */
+      .controls-bar {
+        position: relative;
+        z-index: 1;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      @media (min-width: 768px) {
+        .controls-bar {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      .filter-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .filter-btn {
+        font-family: inherit;
+        font-size: 0.8rem;
+        padding: 0.42rem 1rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .filter-btn:hover {
+        border-color: rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+      }
+
+      .filter-btn.active {
+        background: var(--primary);
+        color: #000000;
+        border-color: var(--primary);
+        font-weight: 600;
+      }
+
+      .search-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 22rem;
+      }
+
+      .search-input {
+        width: 100%;
+        background: #181818;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 9999px;
+        padding: 0.55rem 2.5rem 0.55rem 1rem;
+        color: var(--heading);
+        font-family: inherit;
+        font-size: 0.84rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .search-input::placeholder {
+        color: var(--subtle);
+      }
+
+      .search-input:focus {
+        border-color: var(--primary);
+      }
+
+      .search-icon {
+        position: absolute;
+        right: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--subtle);
+        pointer-events: none;
+      }
+
+      /* Articles Grid */
+      .articles-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.15rem;
+      }
+
+      @media (min-width: 768px) {
+        .articles-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 1.35rem;
+        }
+      }
+
+      .article-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1.25rem;
+        padding: 1.65rem;
+        text-decoration: none;
+        transition: border-color 0.28s ease, background-color 0.28s ease, transform 0.28s ease;
+      }
+
+      .article-card:hover {
+        background-color: var(--card-hover);
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+      }
+
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .card-cat {
+        font-size: 0.74rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.25rem 0.7rem;
+        border-radius: 9999px;
+      }
+
+      .card-badge {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(222, 219, 200, 0.85);
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0.25rem 0.6rem;
+        border-radius: 0.4rem;
+        direction: ltr;
+      }
+
+      .card-title {
+        margin: 0 0 0.35rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--heading);
+        line-height: 1.45;
+      }
+
+      .card-subtitle {
+        margin: 0 0 0.9rem;
+        font-size: 0.88rem;
+        color: rgba(222, 219, 200, 0.78);
+      }
+
+      .card-desc {
+        margin: 0;
+        font-size: 0.86rem;
+        line-height: 1.9;
+        color: var(--muted);
+      }
+
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 1.2rem;
+      }
+
+      .tag-chip {
+        font-size: 0.72rem;
+        color: rgba(222, 219, 200, 0.72);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0.2rem 0.6rem;
+        border-radius: 0.45rem;
+      }
+
+      .card-foot {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .card-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.84rem;
+        font-weight: 500;
+        color: var(--primary);
+        transition: color 0.2s ease;
+      }
+
+      .article-card:hover .card-cta {
+        color: #ffffff;
+      }
+
+      .card-format {
+        font-size: 0.74rem;
+        color: var(--subtle);
+      }
+
+      .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3.5rem 1.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 1.25rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .reset-btn {
+        margin-top: 1rem;
+        background: var(--primary);
+        color: #000000;
+        border: none;
+        border-radius: 9999px;
+        padding: 0.45rem 1.2rem;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Footer matching homepage */
+      footer {
+        background-color: var(--bg);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 2.5rem 1.5rem;
+        color: rgba(225, 224, 204, 0.6);
+        font-size: 0.78rem;
+      }
+
+      .footer-inner {
+        max-width: 80rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-inner {
+          flex-direction: row-reverse;
+        }
+      }
+
+      .footer-id {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        direction: ltr;
+      }
+
+      .footer-name {
+        color: var(--heading);
+        font-weight: 600;
+        font-size: 0.86rem;
+      }
+
+      .footer-loc {
+        color: rgba(222, 219, 200, 0.75);
+      }
+
+      .footer-links {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+      }
+
+      .footer-links a,
+      .footer-links button {
+        background: none;
+        border: none;
+        padding: 0;
+        color: rgba(225, 224, 204, 0.68);
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover,
+      .footer-links button:hover {
+        color: var(--heading);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-nav-wrap">
+      <nav class="top-nav" aria-label="ناوبری اصلی">
+        <a href="/" class="nav-brand">Bardia Khosravi*</a>
+        <a href="/">صفحه اصلی</a>
+        <a href="/articles.html" class="active" aria-current="page">فهرست مطالب</a>
+      </nav>
+    </div>
+
+    <main>
+      <section class="archive-hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-top">
+          <span class="kicker"><span class="kicker-dot"></span><span>WRITINGS &amp; ARCHIVE</span></span>
+          <span class="count-pill" id="articleCount">۲ مطلب منتشرشده</span>
+        </div>
+        <h1 class="hero-title">
+          فهرست مطالب
+          <span class="hero-title-serif">Archive</span>
+        </h1>
+        <p class="hero-desc">
+          مجموعه‌ای از نوشته‌ها، پژوهش‌های ادبی و صفحه‌های مستقل منتشرشده روی وب‌سایت. می‌توانید بر اساس موضوع فیلتر کنید یا در عنوان و توضیحات جستجو نمایید.
+        </p>
+
+        <div class="controls-bar">
+          <div class="filter-pills" id="filterPills" role="group" aria-label="فیلتر موضوعی"></div>
+          <div class="search-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input
+              type="search"
+              id="searchInput"
+              class="search-input"
+              placeholder="جستجو در مطالب..."
+              aria-label="جستجو در مطالب"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="articles-grid" id="articlesGrid" aria-live="polite"></section>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-id">
+          <span class="footer-name">Bardia Khosravi</span>
+          <span aria-hidden="true">·</span>
+          <span>Associate Product Manager &amp; Industrial Engineer</span>
+          <span aria-hidden="true">·</span>
+          <span class="footer-loc">Tehran, Iran</span>
+        </div>
+        <div class="footer-links">
+          <a href="/">صفحه اصلی</a>
+          <a href="https://www.linkedin.com/in/bardiakhosravi" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <button type="button" id="backToTop">بازگشت به بالا ↑</button>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/articles-data.js"></script>
+    <script>
+      (function () {
+        var fallbackArticles = [
+          {
+            id: 'famous-persian-couplets',
+            number: '01',
+            badge: '01 / LITERATURE',
+            category: 'ادبیات فارسی',
+            categoryKey: 'literature',
+            format: 'گزارش تحلیلی',
+            title: 'پنجاه بیت ماندگار زبان فارسی',
+            subtitle: 'از پرکاربردترین ضرب‌المثل‌ها تا غلط‌های مشهور',
+            description: 'مروری ساختاریافته بر ۵۰ بیت پرکاربرد و ضرب‌المثل‌گونه از سعدی، صائب، حافظ، مولانا و فردوسی، همراه با نمودار آماری و بررسی ابیاتی که امروزه اشتباه خوانده می‌شوند.',
+            url: '/famous-persian-couplets.html',
+            tags: ['شعر فارسی', 'ضرب‌المثل', 'غلط‌های مشهور']
+          },
+          {
+            id: 'shahnameh',
+            number: '02',
+            badge: '02 / CLASSICS',
+            category: 'متون کلاسیک',
+            categoryKey: 'classics',
+            format: 'متن کامل',
+            title: 'شاهنامه فردوسی',
+            subtitle: 'متن کامل، ساخت‌یافته و آرایه‌شده',
+            description: 'نسخه کامل و ساختاریافته شاهنامه حکیم ابوالقاسم فردوسی با صفحه‌آرایی خوانا و آرایه‌شده برای مطالعه و مرور داستان‌های حماسی در وب.',
+            url: '/shahnameh.html',
+            tags: ['فردوسی', 'شاهنامه', 'ادبیات حماسی']
+          }
+        ];
+
+        var articles = Array.isArray(window.SITE_ARTICLES) && window.SITE_ARTICLES.length
+          ? window.SITE_ARTICLES
+          : fallbackArticles;
+
+        var activeCategory = 'all';
+        var searchQuery = '';
+
+        var gridEl = document.getElementById('articlesGrid');
+        var pillsEl = document.getElementById('filterPills');
+        var countEl = document.getElementById('articleCount');
+        var searchEl = document.getElementById('searchInput');
+        var backToTopEl = document.getElementById('backToTop');
+
+        function toPersianDigits(num) {
+          return String(num).replace(/\d/g, function (d) {
+            return '۰۱۲۳۴۵۶۷۸۹'[Number(d)];
+          });
+        }
+
+        function escapeHtml(str) {
+          return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+
+        function getCategories() {
+          var seen = {};
+          var list = [{ key: 'all', label: 'همه مطالب' }];
+          articles.forEach(function (a) {
+            var key = a.categoryKey || a.category;
+            if (key && !seen[key]) {
+              seen[key] = true;
+              list.push({ key: key, label: a.category });
+            }
+          });
+          return list;
+        }
+
+        function renderPills() {
+          var cats = getCategories();
+          pillsEl.innerHTML = cats.map(function (c) {
+            var isActive = activeCategory === c.key;
+            var count = c.key === 'all'
+              ? articles.length
+              : articles.filter(function (a) { return (a.categoryKey || a.category) === c.key; }).length;
+            return (
+              '<button type="button" class="filter-btn' + (isActive ? ' active' : '') + '" data-cat="' + escapeHtml(c.key) + '">' +
+                escapeHtml(c.label) + ' (' + toPersianDigits(count) + ')' +
+              '</button>'
+            );
+          }).join('');
+        }
+
+        function renderArticles() {
+          var q = searchQuery.trim().toLowerCase();
+          var filtered = articles.filter(function (item) {
+            var catMatch = activeCategory === 'all' || (item.categoryKey || item.category) === activeCategory;
+            if (!catMatch) return false;
+            if (!q) return true;
+            var haystack = [item.title, item.subtitle, item.description, item.category]
+              .concat(item.tags || [])
+              .join(' ')
+              .toLowerCase();
+            return haystack.indexOf(q) !== -1;
+          });
+
+          countEl.textContent = toPersianDigits(filtered.length) + ' مطلب' + (filtered.length === articles.length ? ' منتشرشده' : ' یافت شد');
+
+          if (!filtered.length) {
+            gridEl.innerHTML =
+              '<div class="empty-state">' +
+                '<div>مطلبی با این جستجو پیدا نشد.</div>' +
+                '<button type="button" class="reset-btn" id="resetFilters">نمایش همه مطالب</button>' +
+              '</div>';
+            var resetBtn = document.getElementById('resetFilters');
+            if (resetBtn) {
+              resetBtn.addEventListener('click', function () {
+                activeCategory = 'all';
+                searchQuery = '';
+                searchEl.value = '';
+                renderPills();
+                renderArticles();
+              });
+            }
+            return;
+          }
+
+          gridEl.innerHTML = filtered.map(function (item) {
+            var tagsHtml = (item.tags || []).map(function (t) {
+              return '<span class="tag-chip">' + escapeHtml(t) + '</span>';
+            }).join('');
+
+            return (
+              '<a class="article-card" href="' + escapeHtml(item.url) + '">' +
+                '<div>' +
+                  '<div class="card-head">' +
+                    '<span class="card-cat">' + escapeHtml(item.category) + '</span>' +
+                    '<span class="card-badge">' + escapeHtml(item.badge) + '</span>' +
+                  '</div>' +
+                  '<h2 class="card-title">' + escapeHtml(item.title) + '</h2>' +
+                  (item.subtitle ? '<p class="card-subtitle">' + escapeHtml(item.subtitle) + '</p>' : '') +
+                  '<p class="card-desc">' + escapeHtml(item.description) + '</p>' +
+                  (tagsHtml ? '<div class="card-tags">' + tagsHtml + '</div>' : '') +
+                '</div>' +
+                '<div class="card-foot">' +
+                  '<span class="card-cta">' +
+                    '<span>مطالعه مطلب</span>' +
+                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>' +
+                  '</span>' +
+                  '<span class="card-format">' + escapeHtml(item.format || 'HTML') + '</span>' +
+                '</div>' +
+              '</a>'
+            );
+          }).join('');
+        }
+
+        pillsEl.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-cat]');
+          if (!btn) return;
+          activeCategory = btn.getAttribute('data-cat');
+          renderPills();
+          renderArticles();
+        });
+
+        searchEl.addEventListener('input', function (e) {
+          searchQuery = e.target.value || '';
+          renderArticles();
+        });
+
+        if (backToTopEl) {
+          backToTopEl.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+
+        renderPills();
+        renderArticles();
+      })();
+    </script>
+  </body>
+</html>
