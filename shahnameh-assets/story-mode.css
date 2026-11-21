@@ -1,8 +1,56 @@
 
 /* ===== Shahnameh — Safavid Illuminated Manuscript Design System (v6) ===== */
 :root {
+  color-scheme: dark;
   --f-verse: "Gulzar", "IranNastaliq", "Noto Nastaliq Urdu", "Amiri", serif;
   --f-ui: "Vazirmatn", system-ui, sans-serif;
+
+  /* Universal Warm Dark Bronze-Gold Manuscript Palette (consistent across Firefox, Chrome, Safari, Mi Browser) */
+  --bg: #262217;
+  --bg2: #2e291c;
+  --card: #1e1b12;
+  --ink: #efe7d4;
+  --ink-soft: #c4ba9f;
+  --muted: #968c74;
+  --line: rgba(201, 162, 63, .28);
+  --lapis: #cfe0f0;
+  --lapis-soft: #9fbcd8;
+  --gold: #c9a23f;
+  --gold-soft: #a6832d;
+  --crimson: #e08a74;
+  --hl: #3d3522;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .42);
+
+  --ms-parchment: #262217;
+  --ms-folio: #1e1b12;
+  --ms-ink: #efe7d4;
+  --ms-ink2: #c4ba9f;
+  --ms-mut: #968c74;
+  --ms-lapis: #cfe0f0;
+  --ms-gold: #c9a23f;
+  --ms-gold-hi: #e7c975;
+  --ms-vermilion: #e08a74;
+  --ms-rule: rgba(201, 162, 63, .34);
+  --ms-rule-soft: rgba(201, 162, 63, .16);
+}
+html.night {
+  /* Light Parchment Alternate Mode when toggled */
+  color-scheme: light;
+  --bg: #f4ecd8;
+  --bg2: #ebe0c6;
+  --card: #fbf7ec;
+  --ink: #211a12;
+  --ink-soft: #574a38;
+  --muted: #86775e;
+  --line: rgba(179, 136, 42, .35);
+  --lapis: #16365c;
+  --lapis-soft: #2e5988;
+  --gold: #b3882a;
+  --gold-soft: #d4b96a;
+  --crimson: #8c231e;
+  --hl: #f3e3b3;
+  --shadow: 0 4px 16px rgba(64, 48, 16, .10);
+
   --ms-parchment: #f4ecd8;
   --ms-folio: #fbf7ec;
   --ms-ink: #211a12;
@@ -14,19 +62,6 @@
   --ms-vermilion: #8c231e;
   --ms-rule: rgba(179, 136, 42, .42);
   --ms-rule-soft: rgba(179, 136, 42, .22);
-}
-html.night {
-  --ms-parchment: #0f141d;
-  --ms-folio: #161e2b;
-  --ms-ink: #ece3cc;
-  --ms-ink2: #c2b69a;
-  --ms-mut: #8390a6;
-  --ms-lapis: #8db6e2;
-  --ms-gold: #d6b058;
-  --ms-gold-hi: #f0d78c;
-  --ms-vermilion: #e08672;
-  --ms-rule: rgba(214, 176, 88, .35);
-  --ms-rule-soft: rgba(214, 176, 88, .18);
 }
 
 /* Global Persian Nastaliq Poetry Typography (Full Text + Story Mode) */
@@ -721,4 +756,85 @@ html.night .sm-ledger {
   .cover-inner { max-width: 1240px; column-gap: 4rem; }
   .sm-wrap { max-width: 1240px; }
   .sm-picks { gap: 1rem; }
+}
+
+/* ===== Universal Warm Dark Bronze-Gold Contrast & Firefox Mobile Hardening (v7) ===== */
+#sm {
+  --pb2: #2e291c;
+  --gold2: #dfb959;
+  background-color: var(--ms-parchment);
+  background-image: radial-gradient(circle at 50% 0%, rgba(201, 162, 63, .08), transparent 55%);
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  touch-action: pan-y;
+}
+html.night #sm {
+  --pb2: #ebe0c6;
+  --gold2: #8a6410;
+}
+
+/* CRITICAL Firefox Mobile Fix: hide underlying page completely when Story Mode is open
+   so full-text content NEVER bleeds underneath or triggers Firefox desktop zoom-out */
+body.sm-lock > *:not(#sm) {
+  display: none !important;
+}
+html, body {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  touch-action: pan-y;
+}
+.cover, .topbar, .layout, main {
+  max-width: 100% !important;
+}
+
+/* Button contrast on warm dark bronze-gold default theme */
+.btn.sm-main,
+.sm-cta,
+.sm-go,
+.sm-chip.on,
+.sm-ctl button.main {
+  background: linear-gradient(135deg, #c9a23f, #b0892b);
+  border-color: #e7c975;
+  color: #19150d !important;
+}
+.btn.sm-main:hover,
+.sm-cta:hover,
+.sm-go:hover {
+  background: linear-gradient(135deg, #d8b250, #bf9635);
+}
+html.night .btn.sm-main,
+html.night .sm-cta,
+html.night .sm-go,
+html.night .sm-chip.on,
+html.night .sm-ctl button.main {
+  background: #16365c;
+  border-color: #b3882a;
+  color: #fbf7ec !important;
+}
+
+/* Dark warm bronze ledger & bottom nav matching Mi Browser look */
+.sm-ledger {
+  background: rgba(30, 27, 18, .85);
+}
+html.night .sm-ledger {
+  background: rgba(251, 247, 236, .75);
+}
+.sm-nav {
+  background: rgba(23, 20, 13, .96);
+  border-color: rgba(201, 162, 63, .38);
+}
+.sm-nav button.on {
+  color: #e5c160;
+  background: rgba(201, 162, 63, .16);
+}
+.sm-banner, .cover-plate {
+  box-shadow: 0 0 0 1px rgba(201, 162, 63, .35), 0 14px 32px -12px rgba(0, 0, 0, .55);
+}
+.shamsa-ic circle {
+  fill: var(--ms-folio);
 }
