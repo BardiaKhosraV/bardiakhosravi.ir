@@ -67,7 +67,7 @@ html.night {
 /* Global Persian Nastaliq Poetry Typography (Full Text + Story Mode) */
 .bayt .h1, .bayt .h2 {
   font-family: var(--f-verse) !important;
-  font-size: 1.24em !important;
+  font-size: calc(var(--fs, 1.06rem) * 1.2) !important;
   line-height: 2.55 !important;
   font-weight: 400;
   letter-spacing: 0;
@@ -625,7 +625,7 @@ html.night .sm-ledger {
     gap: .1rem .5ch !important;
   }
   .bayt .h1, .bayt .h2 {
-    font-size: clamp(1.12rem, 4.5vw, 1.32rem) !important;
+    font-size: calc(var(--fs, 1.06rem) * 1.18) !important;
     line-height: 2.45 !important;
   }
 }
@@ -783,11 +783,8 @@ html.night #sm {
 body.sm-lock > *:not(#sm) {
   display: none !important;
 }
-html, body {
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-  touch-action: pan-y;
-}
+html { max-width: 100%; touch-action: pan-y; }
+body { max-width: 100%; overflow-x: clip; touch-action: pan-y; }
 .cover, .topbar, .layout, main {
   max-width: 100% !important;
 }
@@ -837,4 +834,155 @@ html.night .sm-ledger {
 }
 .shamsa-ic circle {
   fill: var(--ms-folio);
+}
+
+/* ===== v8 Fixes: Frozen Topbar, Font Scaling, TOC Accordion, Multi-Couplet Reader ===== */
+html[data-fs="0"] { --fs: 0.88rem; }
+html[data-fs="1"] { --fs: 1.04rem; }
+html[data-fs="2"] { --fs: 1.24rem; }
+html[data-fs="3"] { --fs: 1.46rem; }
+
+/* Properly frozen topbar (position: fixed so it never disappears mid-scroll) */
+.topbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 90 !important;
+  background: rgba(30, 27, 18, .96) !important;
+  border-bottom: 1px solid var(--ms-rule) !important;
+  min-height: 54px;
+}
+html.night .topbar {
+  background: rgba(251, 247, 236, .96) !important;
+}
+.topbar.show {
+  transform: none !important;
+  opacity: 1 !important;
+}
+.layout {
+  padding-top: 60px;
+}
+#toc {
+  top: 56px;
+  height: calc(100vh - 56px);
+}
+@media (max-width: 980px) {
+  #toc {
+    top: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 120 !important;
+    background: var(--card) !important;
+    border-inline-start: 1px solid var(--ms-rule);
+    padding-top: max(1rem, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* Crisp TOC Accordion with Chevron & Mobile Close Button */
+.toc-close-btn {
+  display: none;
+  border: 1px solid var(--ms-rule);
+  background: var(--ms-parchment);
+  color: var(--ms-ink);
+  border-radius: 6px;
+  padding: .25rem .7rem;
+  font-size: .82rem;
+  font-weight: 600;
+}
+@media (max-width: 980px) { .toc-close-btn { display: inline-flex; align-items: center; gap: .3rem; } }
+.toc-ch {
+  position: relative;
+  padding: .52rem .75rem !important;
+  font-size: .92rem !important;
+  align-items: center !important;
+  cursor: pointer;
+}
+.toc-ch::before {
+  content: "‹";
+  display: inline-block;
+  font-size: 1.05rem;
+  color: var(--ms-gold);
+  margin-inline-end: .25rem;
+  transition: transform .2s ease;
+  flex: none;
+}
+.toc-group.open > .toc-ch::before {
+  transform: rotate(-90deg);
+}
+.toc-group.open > .toc-ch {
+  color: var(--ms-lapis);
+  background: rgba(201, 162, 63, .10);
+}
+.toc-kids {
+  padding-inline-start: .6rem;
+  border-inline-start: 1px solid var(--ms-rule-soft);
+  margin-inline-start: .95rem;
+  margin-bottom: .35rem;
+}
+.toc-kid {
+  padding: .38rem .7rem !important;
+  font-size: .84rem !important;
+}
+
+/* Mobile Full-Text Bayt Stacking (clean readable Nastaliq without squashing) */
+@media (max-width: 680px) {
+  .bayt {
+    display: grid !important;
+    grid-template-columns: 1.8em 1fr 1.8em !important;
+    gap: 0 .45ch !important;
+    padding: .35rem .25rem !important;
+  }
+  .bayt .bn { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  .bayt .h1 { grid-column: 2; grid-row: 1; text-align: right; }
+  .bayt .h2 { grid-column: 2; grid-row: 2; text-align: left; }
+  .bayt .bmbtn, .bayt button { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+}
+.results { z-index: 100 !important; max-height: 65dvh; overflow-y: auto; }
+.chap h2 { font-family: var(--f-verse) !important; font-weight: 400 !important; line-height: 2.1 !important; }
+
+/* Multi-Couplet (2 or 3 bayts per page) Styling in Story Mode Reader */
+.sm-ctl button.per {
+  width: auto;
+  min-width: 58px;
+  height: 38px;
+  padding: 0 .8rem;
+  border-radius: 6px;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.sm-v.multi {
+  display: flex !important;
+  flex-direction: column;
+  gap: .95rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+.sm-v.multi-2 {
+  font-size: clamp(1.32rem, 4.1vw + .2rem, 1.95rem);
+  line-height: 2.35;
+}
+.sm-v.multi-3 {
+  font-size: clamp(1.14rem, 3.3vw + .15rem, 1.62rem);
+  line-height: 2.2;
+}
+.sm-pair {
+  padding-bottom: .75rem;
+  border-bottom: 1px solid var(--ms-rule-soft);
+}
+.sm-pair:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+@media (min-width: 720px) {
+  .sm-pair {
+    display: grid;
+    grid-template-columns: 1fr 34px 1fr;
+    align-items: center;
+    column-gap: 1rem;
+  }
+  .sm-pair .a { grid-column: 1; }
+  .sm-pair .o { grid-column: 2; margin: 0; display: grid; place-items: center; }
+  .sm-pair .b { grid-column: 3; }
 }

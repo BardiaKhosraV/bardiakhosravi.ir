@@ -222,7 +222,8 @@
 
   var root = document.getElementById("sm");
   var state = { v: "home", era: -1, ei: 0, k: 0, bi: 0 };
-  var timer = null, speed = 6000, playing = false;
+  var timer = null, speed = 6000, playing = false, perPage = store.get("sm-per", 1);
+  if (perPage !== 1 && perPage !== 2 && perPage !== 3) perPage = 1;
 
   function $(id) { return document.getElementById(id); }
   var syncingHash = false;
@@ -380,13 +381,13 @@
     root.innerHTML = '<div class="sm-rd view"><div class="top"><button class="sm-x" data-a="ep">' + ic("back") + '</button><b>' + esc(e.dt) + '</b><span>صحنهٔ ' + fa(state.k + 1) + ' از ' + fa(e.sc.length) + '</span></div>' +
       '<div class="sm-prog"><i id="smP"></i></div><div class="sm-scene">' + esc(sc.t) + '</div>' +
       '<div class="sm-stage" id="smSt">' + cornersHTML() + '</div>' +
-      '<div class="sm-ctl"><button data-a="prev" aria-label="بیت قبلی">' + ic("back") + '</button><button id="smFav" data-a="fav" aria-label="نشان‌گذاری">' + ic("heart") + '</button><button class="main" id="smPlay" data-a="play" aria-label="پخش خودکار">' + icFill("play") + '</button><button class="spd" id="smSpd" data-a="spd" aria-label="سرعت"></button><button data-a="next" aria-label="بیت بعدی">' + ic("next") + '</button></div>' +
+      '<div class="sm-ctl"><button data-a="prev" aria-label="بیت قبلی">' + ic("back") + '</button><button id="smFav" data-a="fav" aria-label="نشان‌گذاری">' + ic("heart") + '</button><button class="main" id="smPlay" data-a="play" aria-label="پخش خودکار">' + icFill("play") + '</button><button class="per" id="smPer" data-a="per" aria-label="تعداد بیت در صفحه"></button><button class="spd" id="smSpd" data-a="spd" aria-label="سرعت"></button><button data-a="next" aria-label="بیت بعدی">' + ic("next") + '</button></div>' +
       '<div class="sm-hint t-meta" id="smH"></div></div>';
     var st = $("smSt"), x0 = null, swiped = false;
     st.addEventListener("touchstart", function (ev) { x0 = ev.touches[0].clientX; swiped = false; }, { passive: true });
     st.addEventListener("touchend", function (ev) {
       if (x0 == null) return; var dx = ev.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 50) { swiped = true; ev.preventDefault(); go(dx < 0 ? 1 : -1); }
+      if (Math.abs(dx) > 45) { swiped = true; ev.preventDefault(); go(dx > 0 ? 1 : -1); }
     });
     st.addEventListener("click", function (ev) { if (swiped || ev.target.closest("button")) return; if (state.bi < S[EP[state.ei].sc[state.k]].b.length) go(1); });
     showCouplet(1);
@@ -409,9 +410,20 @@
         (hasNext ? '<button class="sm-cta" data-play="' + (state.k + 1) + '">صحنهٔ بعد: ' + esc(S[e.sc[state.k + 1]].t) + '</button>' : '<button class="sm-cta" data-a="home">انتخاب قسمت بعدی</button>') +
         '<button class="sm-ghost" data-a="ep">نقشهٔ صحنه‌ها</button></div>';
     } else {
-      var b = sc.b[state.bi];
-      node.className = "sm-v " + (dir < 0 ? "prev" : "next");
-      node.innerHTML = '<span class="a">' + esc(b[0]) + '</span><span class="o">' + SVG_SHAMSA + '</span><span class="b">' + esc(b[1] || "") + '</span>';
+      var endBi = Math.min(len, state.bi + perPage);
+      if (perPage === 1) {
+        var b = sc.b[state.bi];
+        node.className = "sm-v " + (dir < 0 ? "prev" : "next");
+        node.innerHTML = '<span class="a">' + esc(b[0]) + '</span><span class="o">' + SVG_SHAMSA + '</span><span class="b">' + esc(b[1] || "") + '</span>';
+      } else {
+        node.className = "sm-v multi multi-" + perPage + " " + (dir < 0 ? "prev" : "next");
+        var pairsHtml = "";
+        for (var pIdx = state.bi; pIdx < endBi; pIdx++) {
+          var bp = sc.b[pIdx];
+          pairsHtml += '<div class="sm-pair"><span class="a">' + esc(bp[0]) + '</span><span class="o">' + SVG_SHAMSA + '</span><span class="b">' + esc(bp[1] || "") + '</span></div>';
+        }
+        node.innerHTML = pairsHtml;
+      }
     }
     st.appendChild(node);
     sync(len, si);
@@ -419,19 +431,27 @@
 
   function sync(len, si) {
     var p = $("smP"); if (p) p.style.width = Math.round(state.bi / len * 100) + "%";
-    var h = $("smH"); if (h) h.textContent = state.bi >= len ? "" : "بیت " + fa(state.bi + 1) + " از " + fa(len) + " — ضربه بزنید یا بکشید";
+    var h = $("smH");
+    if (h) {
+      if (state.bi >= len) h.textContent = "";
+      else if (perPage === 1 || state.bi + 1 >= len) h.textContent = "بیت " + fa(state.bi + 1) + " از " + fa(len) + " — ضربه بزنید یا بکشید";
+      else h.textContent = "بیت " + fa(state.bi + 1) + " تا " + fa(Math.min(len, state.bi + perPage)) + " از " + fa(len) + " — ضربه بزنید یا بکشید";
+    }
     var f = $("smFav");
     if (f) { var on = bm().some(function (m) { return m.s === si && m.b === state.bi; }); f.classList.toggle("on", on); f.innerHTML = on ? icFill("heart") : ic("heart"); f.style.visibility = state.bi >= len ? "hidden" : ""; }
     var pl = $("smPlay"); if (pl) pl.innerHTML = playing ? ic("pause") : icFill("play");
     var sp = $("smSpd"); if (sp) sp.textContent = speed < 5000 ? "تند" : speed < 8000 ? "متوسط" : "آرام";
+    var pr = $("smPer"); if (pr) pr.textContent = fa(perPage) + " بیت";
   }
 
   function go(d) {
     var e = EP[state.ei], si = e.sc[state.k], len = S[si].b.length;
-    var nb = Math.max(0, Math.min(len, state.bi + d));
+    var step = d * perPage;
+    var nb = Math.max(0, Math.min(len, state.bi + step));
     if (nb === state.bi) return;
     state.bi = nb;
-    if (nb > (far[si] || 0)) { far[si] = nb; store.set("sm-far", far); touch(); }
+    var reached = Math.min(len, nb + (nb < len ? perPage - 1 : 0));
+    if (reached > (far[si] || 0)) { far[si] = reached; store.set("sm-far", far); touch(); }
     last = { si: si, bi: nb, ei: state.ei, k: state.k }; store.set("sm-last", last);
     showCouplet(d);
     syncHistory("replace");
@@ -496,6 +516,7 @@
     else if (d.a === "next") go(1);
     else if (d.a === "prev") go(-1);
     else if (d.a === "fav") fav();
+    else if (d.a === "per") { perPage = perPage >= 3 ? 1 : perPage + 1; store.set("sm-per", perPage); showCouplet(1); }
     else if (d.a === "spd") { speed = speed >= 8000 ? 3500 : speed < 5000 ? 6000 : 9000; if (playing) schedule(); var s0 = EP[state.ei].sc[state.k]; sync(S[s0].b.length, s0); }
     else if (d.a === "play") { playing = !playing; if (playing) schedule(); else stop(); var s1 = EP[state.ei].sc[state.k]; sync(S[s1].b.length, s1); }
   });
@@ -635,4 +656,51 @@
 
   /* Restore exact route on load if URL has a hash */
   if (location.hash) applyHash();
+
+  /* ---- Fix Full-Text Sidebar TOC Accordion, Mobile Drawer Close & Frozen Topbar ---- */
+  (function fixFullTextUI() {
+    var tocEl = document.getElementById("toc");
+    var topbarEl = document.querySelector(".topbar");
+    var coverEl = document.getElementById("cover");
+
+    /* Keep topbar reliably frozen whenever user scrolls past cover */
+    if (topbarEl && coverEl) {
+      function syncTopbar() {
+        var r = coverEl.getBoundingClientRect();
+        topbarEl.classList.toggle("show", r.bottom <= 80);
+      }
+      syncTopbar();
+      window.addEventListener("scroll", syncTopbar, { passive: true });
+      window.addEventListener("resize", syncTopbar, { passive: true });
+    }
+
+    /* Fix TOC chapter expand/collapse: tapping ANYWHERE on .toc-ch toggles open/close cleanly */
+    if (tocEl) {
+      var h4 = tocEl.querySelector("h4");
+      if (h4 && !h4.querySelector(".toc-close-btn")) {
+        var closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "toc-close-btn";
+        closeBtn.textContent = "بستن ×";
+        closeBtn.addEventListener("click", function () { tocEl.classList.remove("open"); });
+        h4.appendChild(closeBtn);
+      }
+
+      tocEl.addEventListener("click", function (ev) {
+        var ch = ev.target.closest(".toc-ch");
+        if (ch) {
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          var g = ch.closest(".toc-group");
+          if (g) g.classList.toggle("open");
+          return;
+        }
+        var kid = ev.target.closest(".toc-kid");
+        if (kid && window.innerWidth <= 980) {
+          setTimeout(function () { tocEl.classList.remove("open"); }, 80);
+        }
+      }, true);
+    }
+  })();
+
 })();
