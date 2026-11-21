@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Writings &amp; Archive — Bardia Khosravi</title>
     <meta name="description" content="Complete archive of essays, literary studies, and standalone web editions published by Bardia Khosravi." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -525,6 +525,79 @@
       .footer-links button:hover {
         color: var(--heading);
       }
+    
+      /* ===== Cross-Device & Cross-Mobile-Browser Responsiveness ===== */
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        overflow-x: hidden;
+        overflow-x: clip;
+      }
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        overflow-x: clip;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button, a { touch-action: manipulation; }
+
+      .top-nav-wrap {
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-inline: max(0.65rem, env(safe-area-inset-left, 0px)) max(0.65rem, env(safe-area-inset-right, 0px));
+      }
+      .top-nav {
+        -webkit-backdrop-filter: blur(12px);
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .top-nav::-webkit-scrollbar { display: none; }
+      .top-nav a { min-height: 36px; display: inline-flex; align-items: center; }
+
+      main {
+        padding-inline: max(0.85rem, env(safe-area-inset-left, 0px)) max(0.85rem, env(safe-area-inset-right, 0px));
+        padding-bottom: max(4rem, env(safe-area-inset-bottom, 0px));
+      }
+      .hero-title { font-size: clamp(1.75rem, 6vw, 3.1rem); }
+      .search-wrap { max-width: 100%; }
+      @media (min-width: 768px) { .search-wrap { max-width: 22rem; } }
+
+      /* Prevent iOS Safari auto-zoom on input focus (<16px) & improve small-screen scrolling */
+      @media (max-width: 767px) {
+        .search-input { font-size: 16px; min-height: 44px; }
+        .filter-btn { min-height: 40px; }
+      }
+      @media (max-width: 520px) {
+        .archive-hero { padding: 1.5rem 1rem; border-radius: 1.15rem; }
+        .filter-pills {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          padding-bottom: 0.2rem;
+        }
+        .filter-pills::-webkit-scrollbar { display: none; }
+        .filter-btn { flex: 0 0 auto; }
+        .article-card { padding: 1.15rem; }
+      }
+      @media (hover: none) {
+        .article-card:hover { transform: none; }
+      }
+
+    
+      @media (min-width: 1200px) {
+        main { max-width: 84rem; padding: 4rem 2.5rem 6rem; }
+        .articles-grid {
+          grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+          gap: 1.5rem;
+        }
+      }
+      @media (min-width: 1600px) {
+        main { max-width: 90rem; }
+      }
+
     </style>
   </head>
   <body id="top">

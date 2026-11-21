@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Bardia Khosravi — Associate Product Manager & Industrial Engineer</title>
     <meta name="description" content="Designing and improving processes — from the production line to the digital product." />
     <meta property="og:title" content="Bardia Khosravi — Associate Product Manager & Industrial Engineer" />
@@ -270,6 +270,80 @@
         font-size: 0.68rem;
         color: #6b7280;
       }
+    
+      /* ===== Cross-Device & Cross-Mobile-Browser Responsiveness ===== */
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        overflow-x: hidden;
+        overflow-x: clip;
+      }
+      body {
+        overflow-x: hidden;
+        overflow-x: clip;
+        min-height: 100vh;
+        min-height: 100dvh;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button, a { touch-action: manipulation; }
+
+      /* iOS Safari backdrop-filter support & safe-area header */
+      #root header {
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-inline: max(0.5rem, env(safe-area-inset-left, 0px)) max(0.5rem, env(safe-area-inset-right, 0px));
+      }
+      #root header nav {
+        -webkit-backdrop-filter: blur(12px);
+        max-width: calc(100vw - 1rem);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      #root header nav::-webkit-scrollbar { display: none; }
+
+      /* Dynamic viewport height for hero & modals on iOS Safari / Android Chrome / Samsung Internet */
+      #root .min-h-screen {
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+      #root .bg-\[\#121212\] {
+        max-height: 90vh;
+        max-height: 90dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Prevent stuck hover state on touch devices */
+      @media (hover: none) {
+        .bk-article-card:hover { transform: none; }
+        .bk-archive-btn:hover { gap: 0.75rem; }
+      }
+
+      /* Safe areas & small-phone (320px-480px) refinements for Latest Writings */
+      #writings {
+        padding-inline: max(0.85rem, env(safe-area-inset-left, 0px)) max(0.85rem, env(safe-area-inset-right, 0px));
+      }
+      .bk-writings-title { font-size: clamp(1.65rem, 5.2vw, 2.65rem); }
+      .bk-card-top, .bk-card-footer { flex-wrap: wrap; }
+      @media (max-width: 480px) {
+        #writings { padding-top: 3.25rem; padding-bottom: 4.5rem; }
+        .bk-writings-shell { padding: 1.5rem 1rem; border-radius: 1.15rem; }
+        .bk-article-card { padding: 1.15rem; }
+        .bk-archive-btn { width: 100%; justify-content: space-between; padding: 0.45rem 0.5rem 0.45rem 1.1rem; }
+      }
+      #root footer {
+        padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+      }
+
+    
+      @media (min-width: 1280px) {
+        .bk-writings-shell { max-width: 84rem; padding: 4.5rem 4rem; }
+        .bk-writings-grid { gap: 1.5rem; }
+      }
+      @media (min-width: 1600px) {
+        .bk-writings-shell { max-width: 90rem; }
+      }
+
     </style>
   </head>
   <body>
