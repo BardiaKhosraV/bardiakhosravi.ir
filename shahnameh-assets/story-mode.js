@@ -18,9 +18,9 @@
     "پادشاهی گشتاسب": "پادشاهی گشتاسب",
     "هفت‌خوان اسفندیار": "هفت‌خوان اسفندیار",
     "پادشاهی همای چهرآزاد": "پادشاهی همای چهرآزاد",
-    "پادشاهی یزدگرد بزه‌گر": "پادشاهی یزدگرد بزه‌گر‌گر",
+    "پادشاهی یزدگرد بزه‌گر": "پادشاهی یزدگرد بزه‌گر",
     "پادشاهی قباد مشهور به شیرویه": "پادشاهی قباد مشهور به شیرویه",
-    "پادشاهی اردشیر شیرویه": "پادشاهی اردشیر شیرویهه",
+    "پادشاهی اردشیر شیرویه": "پادشاهی اردشیر شیرویه",
     "پادشاهی آزرمی‌دخت": "پادشاهی آزرمی‌دخت"
   };
   function dispTitle(t) { return TITLE_FIX[t] || t; }
@@ -181,7 +181,14 @@
   ];
 
   function fa(n) { return Number(n).toLocaleString("fa-IR"); }
-  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
   var store = {
     get: function (k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -256,9 +263,40 @@
       }
     }
   }
+  var smTrigger = null;
+  function getFocusable(el) {
+    var sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    return Array.prototype.filter.call(el.querySelectorAll(sel), function (node) {
+      if (node.getClientRects && !node.getClientRects().length) return false;
+      var st = window.getComputedStyle ? window.getComputedStyle(node) : null;
+      return !st || (st.visibility !== "hidden" && st.display !== "none");
+    });
+  }
+  function activateDialog() {
+    if (!root.classList.contains("on")) {
+      var active = document.activeElement;
+      smTrigger = (active && active !== document.body && !root.contains(active)) ? active : null;
+      root.classList.add("on");
+      document.body.classList.add("sm-lock");
+      root.setAttribute("aria-hidden", "false");
+      try { root.focus({ preventScroll: true }); } catch (e) { root.focus(); }
+    }
+  }
+  function deactivateDialog() {
+    var wasOpen = root.classList.contains("on");
+    root.classList.remove("on");
+    document.body.classList.remove("sm-lock");
+    root.setAttribute("aria-hidden", "true");
+    if (wasOpen) {
+      var target = (smTrigger && document.contains(smTrigger)) ? smTrigger : (document.getElementById("smBtn") || document.getElementById("startBtn"));
+      smTrigger = null;
+      if (target && typeof target.focus === "function") {
+        try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
+      }
+    }
+  }
   function open(v, fromHash) {
-    root.classList.add("on");
-    document.body.classList.add("sm-lock");
+    activateDialog();
     state.v = v || "home";
     render();
     root.scrollTop = 0;
@@ -271,8 +309,7 @@
   function close(fromHash) {
     saveReadingPos();
     stop();
-    root.classList.remove("on");
-    document.body.classList.remove("sm-lock");
+    deactivateDialog();
     updateCoverResume();
     if (!fromHash) syncHistory("push");
   }
@@ -461,10 +498,7 @@
   function playAt(ei, k, bi, fromHash) {
     stop();
     state.ei = ei; state.k = k; state.bi = bi; state.v = "reader";
-    if (!root.classList.contains("on")) {
-      root.classList.add("on");
-      document.body.classList.add("sm-lock");
-    }
+    activateDialog();
     var si = EP[ei].sc[k];
     last = { si: si, bi: bi, ei: ei, k: k };
     store.set("sm-last", last);
@@ -486,10 +520,7 @@
     saveReadingPos();
     stop();
     state.v = v;
-    if (!root.classList.contains("on")) {
-      root.classList.add("on");
-      document.body.classList.add("sm-lock");
-    }
+    activateDialog();
     render();
     root.scrollTop = 0;
     if (!fromHash) syncHistory("push");
@@ -522,6 +553,17 @@
   });
   document.addEventListener("keydown", function (ev) {
     if (!root.classList.contains("on")) return;
+    if (ev.key === "Tab") {
+      var focusables = getFocusable(root);
+      if (!focusables.length) { ev.preventDefault(); root.focus(); return; }
+      var first = focusables[0], lastEl = focusables[focusables.length - 1], cur = document.activeElement;
+      if (ev.shiftKey) {
+        if (cur === first || cur === root || !root.contains(cur)) { ev.preventDefault(); lastEl.focus(); }
+      } else {
+        if (cur === lastEl || !root.contains(cur)) { ev.preventDefault(); first.focus(); }
+      }
+      return;
+    }
     if (ev.key === "Escape") { if (state.v === "reader") showView("ep"); else if (state.v === "ep" || state.v === "bm") showView("home"); else close(); return; }
     if (state.v !== "reader") return;
     if (ev.key === "ArrowLeft" || ev.key === " ") { ev.preventDefault(); go(1); }
