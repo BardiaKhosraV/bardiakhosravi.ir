@@ -124,10 +124,10 @@ body.on-cover .navbtns {
   pointer-events: none;
   z-index: 1;
 }
-.cover-corner.tr { top: 18px; right: 18px; }
-.cover-corner.tl { top: 18px; left: 18px; transform: scaleX(-1); }
-.cover-corner.br { bottom: 18px; right: 18px; transform: scaleY(-1); }
-.cover-corner.bl { bottom: 18px; left: 18px; transform: scale(-1); }
+.cover-corner.tl { top: 18px; left: 18px; transform: none; }
+.cover-corner.tr { top: 18px; right: 18px; transform: scaleX(-1); }
+.cover-corner.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
+.cover-corner.br { bottom: 18px; right: 18px; transform: scale(-1); }
 .cover #medal { display: none; }
 
 .cover-inner { max-width: 680px; width: 100%; padding: .4rem .6rem; }
@@ -279,10 +279,10 @@ body.sm-lock { overflow: hidden; }
 
 .eslimi-k { position: absolute; width: 22px; height: 22px; color: var(--gold); opacity: .75; pointer-events: none; z-index: 2; }
 .eslimi-k svg { width: 100%; height: 100%; display: block; }
-.eslimi-k.a { top: 7px; right: 7px; }
-.eslimi-k.b { top: 7px; left: 7px; transform: scaleX(-1); }
-.eslimi-k.c { bottom: 7px; right: 7px; transform: scaleY(-1); }
-.eslimi-k.d { bottom: 7px; left: 7px; transform: scale(-1); }
+.eslimi-k.a { top: 7px; right: 7px; transform: scaleX(-1); }
+.eslimi-k.b { top: 7px; left: 7px; transform: none; }
+.eslimi-k.c { bottom: 7px; right: 7px; transform: scale(-1); }
+.eslimi-k.d { bottom: 7px; left: 7px; transform: scaleY(-1); }
 
 .sm-wrap { max-width: 760px; margin: 0 auto; padding: max(1rem, env(safe-area-inset-top, 0px)) 1.05rem 7.2rem; }
 .sm-top { display: flex; align-items: center; justify-content: space-between; gap: .7rem; margin-bottom: .9rem; }

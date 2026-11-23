@@ -854,9 +854,9 @@
     var shamsaSrc = th.key === "gold" ? SHARE_ASSETS.shamsaBronze : SHARE_ASSETS.shamsa;
     var fontsReady = (document.fonts && document.fonts.ready)
       ? Promise.all([
-          document.fonts.load('400 44px "Gulzar"').catch(function () {}),
-          document.fonts.load('700 32px "Vazirmatn"').catch(function () {}),
-          document.fonts.load('500 22px "Vazirmatn"').catch(function () {}),
+          document.fonts.load('400 56px "Gulzar"').catch(function () {}),
+          document.fonts.load('700 38px "Vazirmatn"').catch(function () {}),
+          document.fonts.load('500 31px "Vazirmatn"').catch(function () {}),
           document.fonts.ready
         ])
       : Promise.resolve();
@@ -868,19 +868,39 @@
       loadImageAsset(shamsaSrc)
     ]).then(function (res) {
       var coverImg = res[1], cornerImg = res[2], paperImg = res[3], shamsaImg = res[4];
-      var W = 680;
-      var PAD = 68;
-      var INNER_W = W - PAD * 2;
+      // Exact 2.5x mathematical twin of the 312px live preview (.sh-card)
+      var S = 2.5;
+      var W = Math.round(312 * S);          // 780px
+      var PAD_T = Math.round(31.2 * S);     // 78px
+      var PAD_X = Math.round(29.6 * S);     // 74px
+      var PAD_B = Math.round(22.4 * S);     // 56px
+      var CARD_GAP = Math.round(16.8 * S);  // 42px
+      var INNER_W = W - PAD_X * 2;          // 632px
+
       var count = shareState.selected.length;
-      var verseSize = count === 1 ? 42 : (count === 2 ? 37 : (count === 3 ? 33 : 29));
-      var lineH = Math.round(verseSize * 1.94);
-      var coupletGap = count <= 2 ? 30 : 22;
+      var verseSize = Math.round((count <= 2 ? 22.4 : (count === 3 ? 19.6 : 17.6)) * S);
+      var lineH = Math.round(verseSize * (count <= 2 ? 2.05 : (count === 3 ? 1.95 : 1.88)));
+      var coupletGap = Math.round(13.2 * S);
+      var coupletPadT = Math.round(8.8 * S);
+
       var verseFont = '400 ' + verseSize + 'px "Gulzar", "IranNastaliq", "Noto Nastaliq Urdu", "Amiri", serif';
-      var titleFont = '700 28px "Vazirmatn", system-ui, sans-serif';
-      var subFont = '500 20px "Vazirmatn", system-ui, sans-serif';
-      var urlFont = '500 17px "Vazirmatn", system-ui, sans-serif';
+      var titleSize = Math.round(15.36 * S); // 38px
+      var subSize = Math.round(12.32 * S);   // 31px
+      var urlSize = Math.round(10.88 * S);   // 27px
+      var titleFont = '700 ' + titleSize + 'px "Vazirmatn", system-ui, sans-serif';
+      var subFont = '500 ' + subSize + 'px "Vazirmatn", system-ui, sans-serif';
+      var urlFont = '500 ' + urlSize + 'px "Vazirmatn", system-ui, sans-serif';
+
+      var covSize = Math.round(64 * S);      // 160px
+      var matPad = Math.round(3 * S);        // 7.5px
+      var matSize = covSize + matPad * 2;    // 175px
+      var headGap = Math.round(13.6 * S);    // 34px
 
       var meas = document.createElement("canvas").getContext("2d");
+      meas.font = titleFont;
+      var maxTitleW = INNER_W - matSize - headGap;
+      var titleLines = wrapPersianLines(meas, ctxData.sc.t, maxTitleW).slice(0, 2);
+
       meas.font = verseFont;
       var blocks = shareState.selected.map(function (idx) {
         var b = ctxData.sc.b[idx] || ["", ""];
@@ -892,17 +912,14 @@
 
       var totalLines = 0;
       blocks.forEach(function (bl) { totalLines += bl.h1.length + bl.h2.length; });
-      var versesH = totalLines * lineH + Math.max(0, blocks.length - 1) * coupletGap;
-      var covSize = 138;
-      var HEADER_H = 148;
-      var FOOTER_H = 58;
-      var TOP_GAP = 44;
-      var BOT_GAP = 42;
-      var H = PAD + HEADER_H + TOP_GAP + versesH + BOT_GAP + FOOTER_H + PAD;
+      var versesH = totalLines * lineH + Math.max(0, blocks.length - 1) * (coupletGap + coupletPadT) + Math.round(9 * S);
+      var HEADER_H = matSize;
+      var FOOTER_H = Math.round(28 * S);     // 70px
+      var H = PAD_T + HEADER_H + CARD_GAP + versesH + CARD_GAP + FOOTER_H + PAD_B;
 
       var CW = isStory ? 1080 : W;
       var CH = isStory ? 1920 : H;
-      var storyScale = isStory ? Math.min(1.12, (CW - 180) / W, (CH - 260) / H) : 1;
+      var storyScale = isStory ? Math.min((CW * 0.704) / W, (CH * 0.86) / H) : 1;
       var drawW = W * storyScale;
       var drawH = H * storyScale;
       var OX = isStory ? Math.round((CW - drawW) / 2) : 0;
@@ -915,15 +932,14 @@
       c.clearRect(0, 0, CW, CH);
 
       if (isStory) {
-        // Full 9:16 ambient Persian heritage backdrop
-        var bgGrad = c.createLinearGradient(0, 0, CW * 0.3, CH);
+        var bgGrad = c.createLinearGradient(0, 0, CW * 0.28, CH);
         bgGrad.addColorStop(0, th.stops[2]);
         bgGrad.addColorStop(0.55, "#0F0D0A");
         bgGrad.addColorStop(1, "#070605");
         c.fillStyle = bgGrad;
         c.fillRect(0, 0, CW, CH);
 
-        var halo = c.createRadialGradient(CW * 0.5, CH * 0.46, 60, CW * 0.5, CH * 0.48, CW * 0.85);
+        var halo = c.createRadialGradient(CW * 0.5, CH * 0.47, 50, CW * 0.5, CH * 0.47, CW * 0.85);
         halo.addColorStop(0, th.stops[0] + "88");
         halo.addColorStop(0.55, th.stops[1] + "33");
         halo.addColorStop(1, "rgba(0,0,0,0)");
@@ -938,81 +954,80 @@
           if (bgPat) { c.fillStyle = bgPat; c.fillRect(0, 0, CW, CH); }
           c.restore();
         }
-      }
 
-      if (isStory) {
-        // Apple/Spotify-style 2-tier elevation drop shadow behind the floating card in 9:16 Story Mode
+        // Apple-style 2-tier drop shadow in 9:16 Story Mode
         c.save();
-        c.shadowColor = "rgba(0,0,0,0.62)";
-        c.shadowBlur = 44;
+        c.shadowColor = "rgba(0,0,0,0.64)";
+        c.shadowBlur = 46;
         c.shadowOffsetX = 0;
-        c.shadowOffsetY = 20;
-        drawRoundedRect(c, OX, OY, drawW, drawH, 36 * storyScale);
+        c.shadowOffsetY = 22;
+        drawRoundedRect(c, OX, OY, drawW, drawH, 55 * storyScale);
         c.fillStyle = th.stops[1];
         c.fill();
         c.restore();
 
         c.save();
-        c.shadowColor = "rgba(0,0,0,0.28)";
-        c.shadowBlur = 12;
+        c.shadowColor = "rgba(0,0,0,0.34)";
+        c.shadowBlur = 14;
         c.shadowOffsetX = 0;
-        c.shadowOffsetY = 4;
-        drawRoundedRect(c, OX, OY, drawW, drawH, 36 * storyScale);
+        c.shadowOffsetY = 5;
+        drawRoundedRect(c, OX, OY, drawW, drawH, 55 * storyScale);
         c.fillStyle = th.stops[1];
         c.fill();
         c.restore();
       }
 
-      // Translate into card coordinate space (0..W, 0..H)
+      // Draw card in exact 2.5x preview coordinate space (0..W, 0..H)
       c.save();
       c.translate(OX, OY);
       c.scale(storyScale, storyScale);
-      drawRoundedRect(c, 0, 0, W, H, 36);
+      var cardR = Math.round(22 * S); // 55px
+      drawRoundedRect(c, 0, 0, W, H, cardR);
       c.clip();
 
-      // 1. Matte organic mineral-pigment gradient
-      var grad = c.createLinearGradient(0, 0, W * 0.25, H);
+      // 1. Exact 162deg Persian pigment gradient + subtle radial vignette + soft-light paper grain
+      var grad = c.createLinearGradient(0, 0, W * 0.32, H);
       grad.addColorStop(0, th.stops[0]);
       grad.addColorStop(0.54, th.stops[1]);
       grad.addColorStop(1, th.stops[2]);
       c.fillStyle = grad;
       c.fillRect(0, 0, W, H);
 
-      var vig = c.createRadialGradient(W * 0.5, H * 0.36, W * 0.14, W * 0.5, H * 0.5, W * 0.92);
-      vig.addColorStop(0, "rgba(255,255,255,0.03)");
+      var vig = c.createRadialGradient(W * 0.5, H * 0.35, W * 0.14, W * 0.5, H * 0.5, W * 0.92);
+      vig.addColorStop(0, "rgba(255,255,255,0.04)");
       vig.addColorStop(1, "rgba(0,0,0,0.18)");
       c.fillStyle = vig;
       c.fillRect(0, 0, W, H);
 
       if (paperImg) {
         c.save();
-        c.globalAlpha = 0.11;
+        c.globalAlpha = 0.12;
         c.globalCompositeOperation = "soft-light";
         var pat = c.createPattern(paperImg, "repeat");
         if (pat) { c.fillStyle = pat; c.fillRect(0, 0, W, H); }
         c.restore();
       }
 
-      // 2. Thin Tazhib hairline frame + 4 curved Tazhib corners
-      var inset = 18;
+      // 2. Exact Tazhib inner frame & 4 corners (inset 8*2.5=20px, size 22*2.5=55px)
+      var inset = Math.round(8 * S);
+      var frameR = Math.round(15 * S);
       c.strokeStyle = th.frame;
-      c.lineWidth = 1.3;
-      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 20);
+      c.lineWidth = 2.2;
+      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, frameR);
       c.stroke();
 
       if (cornerImg) {
-        var cSize = 42;
-        var cPad = 18;
+        var cSize = Math.round(22 * S); // 55px
         var corners = [
-          [cPad, cPad, 1, 1],
-          [W - cPad, cPad, -1, 1],
-          [cPad, H - cPad, 1, -1],
-          [W - cPad, H - cPad, -1, -1]
+          [inset, inset, 1, 1],
+          [W - inset, inset, -1, 1],
+          [inset, H - inset, 1, -1],
+          [W - inset, H - inset, -1, -1]
         ];
         c.save();
-        drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 20);
+        drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, frameR);
         c.clip();
-        c.globalAlpha = th.key === "gold" ? 0.56 : 0.72;
+        c.globalAlpha = 0.74;
         corners.forEach(function (pt) {
           c.save();
           c.translate(pt[0], pt[1]);
@@ -1023,22 +1038,23 @@
         c.restore();
       }
 
-      // 3. Top RTL Header: Miniature-framed cover (156px) + optically centered Scene Title & "فردوسی · شاهنامه"
-      var covX = W - PAD - covSize;
-      var covY = PAD;
+      // 3. Top RTL Header: Miniature-framed cover + optically centered 1-2 line Scene Title & "فردوسی · شاهنامه"
+      var matX = W - PAD_X - matSize;
+      var matY = PAD_T;
       c.save();
-      c.fillStyle = "rgba(0,0,0,0.22)";
-      drawRoundedRect(c, covX - 5, covY - 5, covSize + 10, covSize + 10, 18);
+      c.fillStyle = "rgba(0,0,0,0.20)";
+      drawRoundedRect(c, matX, matY, matSize, matSize, Math.round(12 * S));
       c.fill();
-      c.strokeStyle = th.accent;
-      c.globalAlpha = 0.65;
-      c.lineWidth = 1.6;
-      drawRoundedRect(c, covX - 5, covY - 5, covSize + 10, covSize + 10, 18);
+      c.strokeStyle = th.frame;
+      c.lineWidth = 2.2;
+      drawRoundedRect(c, matX, matY, matSize, matSize, Math.round(12 * S));
       c.stroke();
       c.restore();
 
+      var covX = matX + matPad;
+      var covY = matY + matPad;
       c.save();
-      drawRoundedRect(c, covX, covY, covSize, covSize, 14);
+      drawRoundedRect(c, covX, covY, covSize, covSize, Math.round(8 * S));
       c.clip();
       if (coverImg) {
         var iw = coverImg.naturalWidth || coverImg.width, ih = coverImg.naturalHeight || coverImg.height;
@@ -1054,59 +1070,62 @@
       c.direction = "rtl";
       c.textAlign = "right";
       c.textBaseline = "middle";
-      var textX = covX - 26;
-      var maxTitleW = textX - PAD;
+      var textX = matX - headGap;
+      var titleLineH = Math.round(titleSize * 1.38);
+      var metaBlockH = titleLines.length * titleLineH + Math.round(6 * S) + subSize;
+      var metaTopY = matY + Math.round((matSize - metaBlockH) / 2);
+
       c.font = titleFont;
       c.fillStyle = th.ink;
-      var titleText = ctxData.sc.t;
-      while (titleText.length > 4 && c.measureText(titleText).width > maxTitleW) {
-        titleText = titleText.slice(0, -2) + "…";
-      }
-      c.fillText(titleText, textX, covY + 52);
-
+      titleLines.forEach(function (ln, li) {
+        c.fillText(ln, textX, metaTopY + Math.round(titleLineH * (li + 0.5)));
+      });
       c.font = subFont;
       c.fillStyle = th.muted;
-      c.fillText("فردوسی · شاهنامه", textX, covY + 92);
+      c.fillText("فردوسی · شاهنامه", textX, metaTopY + titleLines.length * titleLineH + Math.round(6 * S) + Math.round(subSize * 0.5));
 
-      // 4. Poetic Verses
+      // 4. Poetic Verses (exact RTL & Gulzar proportions)
       c.font = verseFont;
       c.fillStyle = th.ink;
       c.textAlign = "right";
       c.textBaseline = "alphabetic";
-      var curY = PAD + HEADER_H + TOP_GAP + Math.round(verseSize * 1.15);
+      var curY = PAD_T + HEADER_H + CARD_GAP + Math.round(verseSize * 1.25);
       blocks.forEach(function (bl, bi) {
         bl.h1.forEach(function (line) {
-          c.fillText(line, W - PAD, curY);
+          c.fillText(line, W - PAD_X, curY);
           curY += lineH;
         });
         bl.h2.forEach(function (line) {
-          c.fillText(line, W - PAD, curY);
+          c.fillText(line, W - PAD_X, curY);
           curY += lineH;
         });
         if (bi < blocks.length - 1) {
+          var sepY = curY - Math.round(lineH * 0.42);
           c.strokeStyle = th.verseDiv;
-          c.lineWidth = 1;
+          c.lineWidth = 2;
           c.beginPath();
-          c.moveTo(PAD, curY - lineH * 0.45);
-          c.lineTo(W - PAD, curY - lineH * 0.45);
+          c.moveTo(PAD_X, sepY);
+          c.lineTo(W - PAD_X, sepY);
           c.stroke();
-          curY += coupletGap;
+          curY += coupletGap + coupletPadT;
         }
       });
 
-      // 5. Minimalist Footer
-      var footY = H - PAD - 6;
+      // 5. Minimalist Footer (exact match to .sh-foot)
+      var footTopY = H - PAD_B - FOOTER_H;
       c.strokeStyle = th.divider;
-      c.lineWidth = 1.1;
+      c.lineWidth = 2;
       c.beginPath();
-      c.moveTo(PAD, footY - 36);
-      c.lineTo(W - PAD, footY - 36);
+      c.moveTo(PAD_X, footTopY);
+      c.lineTo(W - PAD_X, footTopY);
       c.stroke();
 
+      var footMidY = footTopY + Math.round(FOOTER_H * 0.62);
+      var shSize = Math.round(18 * S); // 45px
       if (shamsaImg) {
         c.save();
-        c.globalAlpha = 0.9;
-        c.drawImage(shamsaImg, W - PAD - 28, footY - 17, 28, 28);
+        c.globalAlpha = 0.88;
+        c.drawImage(shamsaImg, W - PAD_X - shSize, footMidY - Math.round(shSize / 2), shSize, shSize);
         c.restore();
       }
 
@@ -1115,16 +1134,16 @@
       c.textBaseline = "middle";
       c.font = urlFont;
       c.fillStyle = th.muted;
-      c.fillText("bardiakhosravi.ir/shahnameh", PAD, footY - 3);
+      c.fillText("bardiakhosravi.ir/shahnameh", PAD_X, footMidY);
 
-      // 6. Apple-style directional 1.5px specular edge rim light (makes card pop forward)
+      // 6. Apple-style directional specular edge rim
       var rim = c.createLinearGradient(0, 0, 0, H);
       rim.addColorStop(0, th.key === "gold" ? "rgba(255,249,224,0.62)" : "rgba(255,255,255,0.34)");
       rim.addColorStop(0.28, "rgba(255,255,255,0.10)");
       rim.addColorStop(1, "rgba(0,0,0,0.28)");
       c.strokeStyle = rim;
-      c.lineWidth = 2;
-      drawRoundedRect(c, 1, 1, W - 2, H - 2, 35);
+      c.lineWidth = 2.5;
+      drawRoundedRect(c, 1.25, 1.25, W - 2.5, H - 2.5, cardR - 1.25);
       c.stroke();
 
       c.restore();
