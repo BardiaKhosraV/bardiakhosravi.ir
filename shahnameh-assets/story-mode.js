@@ -536,6 +536,7 @@
     cornerGold: "/shahnameh-assets/images/tazhib-corner.png",
     cornerBronze: "/shahnameh-assets/images/tazhib-corner-bronze.png",
     shamsa: "/shahnameh-assets/images/tazhib-shamsa.png",
+    shamsaBronze: "/shahnameh-assets/images/tazhib-shamsa-bronze.png",
     paper: "/shahnameh-assets/images/manuscript-paper.webp"
   };
   var SHARE_THEMES = [
@@ -604,6 +605,7 @@
   var shareState = {
     open: false,
     theme: store.get("sm-share-theme", "turquoise"),
+    format: store.get("sm-share-format", "card"),
     selected: [],
     busy: false
   };
@@ -624,6 +626,8 @@
     var th = getShareTheme();
     var grad = "linear-gradient(162deg, " + th.stops[0] + " 0%, " + th.stops[1] + " 54%, " + th.stops[2] + " 100%)";
     var cornerSrc = SHARE_ASSETS[th.corner] || SHARE_ASSETS.cornerGold;
+    var shamsaSrc = th.key === "gold" ? SHARE_ASSETS.shamsaBronze : SHARE_ASSETS.shamsa;
+    var isStory = shareState.format === "story";
     var versesHtml = shareState.selected.map(function (idx) {
       var b = ctx.sc.b[idx];
       if (!b) return "";
@@ -632,7 +636,7 @@
         (b[1] ? '<span class="sh-h2">' + esc(b[1]) + '</span>' : '') +
       '</div>';
     }).join("");
-    return '<div class="sh-card" id="smShareCard" style="background:' + grad + ';color:' + th.ink + ';--sh-ink:' + th.ink + ';--sh-mut:' + th.muted + ';--sh-acc:' + th.accent + ';--sh-frame:' + th.frame + ';--sh-div:' + th.divider + ';--sh-vdiv:' + th.verseDiv + '">' +
+    var cardHtml = '<div class="sh-card' + (isStory ? ' is-story' : '') + '" id="smShareCard" style="background:' + grad + ';color:' + th.ink + ';--sh-ink:' + th.ink + ';--sh-mut:' + th.muted + ';--sh-acc:' + th.accent + ';--sh-frame:' + th.frame + ';--sh-div:' + th.divider + ';--sh-vdiv:' + th.verseDiv + '">' +
       '<span class="sh-paper" aria-hidden="true"></span>' +
       '<span class="sh-frame" aria-hidden="true"></span>' +
       '<img class="sh-cor tl" alt="" src="' + cornerSrc + '" aria-hidden="true">' +
@@ -648,10 +652,13 @@
       '</div>' +
       '<div class="sh-verses sh-count-' + shareState.selected.length + '">' + versesHtml + '</div>' +
       '<div class="sh-foot">' +
-        '<img class="sh-emblem-img" alt="" src="' + SHARE_ASSETS.shamsa + '" aria-hidden="true">' +
+        '<img class="sh-emblem-img" alt="" src="' + shamsaSrc + '" aria-hidden="true">' +
         '<span class="sh-url" dir="ltr">bardiakhosravi.ir/shahnameh</span>' +
       '</div>' +
     '</div>';
+    if (!isStory) return cardHtml;
+    var stageBg = "radial-gradient(circle at 50% 42%, " + th.stops[0] + "55, " + th.stops[2] + " 68%, #090806 100%)";
+    return '<div class="sh-story-stage" style="background:' + stageBg + '">' + cardHtml + '</div>';
   }
   function updateSharePreview() {
     var ctx = shareContext();
@@ -660,6 +667,14 @@
     if (wrap) wrap.innerHTML = shareCardHTML(ctx);
     var cnt = $("smShareCount");
     if (cnt) cnt.textContent = fa(shareState.selected.length) + " از " + fa(SHARE_MAX) + " بیت انتخاب‌شده";
+    var fm = $("smShareFormats");
+    if (fm) {
+      Array.prototype.forEach.call(fm.children, function (btn) {
+        var on = btn.dataset.shFmt === shareState.format;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
     var sw = $("smShareSwatches");
     if (sw) {
       Array.prototype.forEach.call(sw.children, function (btn) {
@@ -726,7 +741,12 @@
           '<button type="button" class="sm-x sh-close" data-a="sh-close" aria-label="بستن">' + ic("x") + '</button>' +
         '</div>' +
         '<div class="sh-preview-wrap" id="smShareCardWrap">' + shareCardHTML(ctx) + '</div>' +
-        '<div class="sh-swatches" id="smShareSwatches" role="group" aria-label="رنگ کارت">' + swatchesHtml + '</div>' +
+        '<div class="sh-controls-row">' +
+          '<div class="sh-formats" id="smShareFormats" role="group" aria-label="قالب خروجی">' +
+            '<button type="button" class="sh-fmt' + (shareState.format === "card" ? " on" : "") + '" data-sh-fmt="card" aria-pressed="' + (shareState.format === "card" ? "true" : "false") + '">کارت</button>' +
+            '<button type="button" class="sh-fmt' + (shareState.format === "story" ? " on" : "") + '" data-sh-fmt="story" aria-pressed="' + (shareState.format === "story" ? "true" : "false") + '">استوری ۹:۱۶</button>' +
+          '</div>' +
+        '<div class="sh-swatches" id="smShareSwatches" role="group" aria-label="رنگ کارت">' + swatchesHtml + '</div></div>' +
         '<div class="sh-picker-head"><span>انتخاب ابیات (تا ۴ بیت)</span><span id="smShareCount">' + fa(shareState.selected.length) + ' از ' + fa(SHARE_MAX) + ' بیت انتخاب‌شده</span></div>' +
         '<div class="sh-picker" id="smShareList">' + pickerHtml + '</div>' +
         '<div class="sh-status" id="smShareStatus" aria-live="polite"></div>' +
@@ -816,12 +836,14 @@
     var ctxData = shareContext();
     if (!ctxData) return Promise.reject(new Error("No active verse"));
     var th = getShareTheme();
+    var isStory = shareState.format === "story";
     var cornerSrc = SHARE_ASSETS[th.corner] || SHARE_ASSETS.cornerGold;
+    var shamsaSrc = th.key === "gold" ? SHARE_ASSETS.shamsaBronze : SHARE_ASSETS.shamsa;
     var fontsReady = (document.fonts && document.fonts.ready)
       ? Promise.all([
-          document.fonts.load('400 50px "Gulzar"').catch(function () {}),
-          document.fonts.load('700 36px "Vazirmatn"').catch(function () {}),
-          document.fonts.load('500 25px "Vazirmatn"').catch(function () {}),
+          document.fonts.load('400 44px "Gulzar"').catch(function () {}),
+          document.fonts.load('700 32px "Vazirmatn"').catch(function () {}),
+          document.fonts.load('500 22px "Vazirmatn"').catch(function () {}),
           document.fonts.ready
         ])
       : Promise.resolve();
@@ -830,20 +852,20 @@
       loadImageAsset(ctxData.im.h || ctxData.im.m),
       loadImageAsset(cornerSrc),
       loadImageAsset(SHARE_ASSETS.paper),
-      loadImageAsset(SHARE_ASSETS.shamsa)
+      loadImageAsset(shamsaSrc)
     ]).then(function (res) {
       var coverImg = res[1], cornerImg = res[2], paperImg = res[3], shamsaImg = res[4];
-      var W = 980;
-      var PAD = 82;
+      var W = 760;
+      var PAD = 64;
       var INNER_W = W - PAD * 2;
       var count = shareState.selected.length;
-      var verseSize = count === 1 ? 58 : (count === 2 ? 50 : (count === 3 ? 44 : 39));
+      var verseSize = count === 1 ? 46 : (count === 2 ? 41 : (count === 3 ? 36 : 32));
       var lineH = Math.round(verseSize * 1.94);
-      var coupletGap = count <= 2 ? 42 : 28;
+      var coupletGap = count <= 2 ? 34 : 24;
       var verseFont = '400 ' + verseSize + 'px "Gulzar", "IranNastaliq", "Noto Nastaliq Urdu", "Amiri", serif';
-      var titleFont = '700 36px "Vazirmatn", system-ui, sans-serif';
-      var subFont = '500 25px "Vazirmatn", system-ui, sans-serif';
-      var urlFont = '500 22px "Vazirmatn", system-ui, sans-serif';
+      var titleFont = '700 30px "Vazirmatn", system-ui, sans-serif';
+      var subFont = '500 21px "Vazirmatn", system-ui, sans-serif';
+      var urlFont = '500 18px "Vazirmatn", system-ui, sans-serif';
 
       var meas = document.createElement("canvas").getContext("2d");
       meas.font = verseFont;
@@ -858,21 +880,78 @@
       var totalLines = 0;
       blocks.forEach(function (bl) { totalLines += bl.h1.length + bl.h2.length; });
       var versesH = totalLines * lineH + Math.max(0, blocks.length - 1) * coupletGap;
-      var HEADER_H = 210;
-      var FOOTER_H = 74;
-      var TOP_GAP = 54;
-      var BOT_GAP = 54;
+      var covSize = 156;
+      var HEADER_H = 166;
+      var FOOTER_H = 62;
+      var TOP_GAP = 48;
+      var BOT_GAP = 46;
       var H = PAD + HEADER_H + TOP_GAP + versesH + BOT_GAP + FOOTER_H + PAD;
 
+      var CW = isStory ? 1080 : (W + 96);
+      var CH = isStory ? 1920 : (H + 112);
+      var OX = Math.round((CW - W) / 2);
+      var OY = isStory ? Math.round((CH - H) / 2) : 36;
+
       var canvas = document.createElement("canvas");
-      canvas.width = W;
-      canvas.height = H;
+      canvas.width = CW;
+      canvas.height = CH;
       var c = canvas.getContext("2d");
+      c.clearRect(0, 0, CW, CH);
+
+      if (isStory) {
+        // Full 9:16 ambient Persian heritage backdrop
+        var bgGrad = c.createLinearGradient(0, 0, CW * 0.3, CH);
+        bgGrad.addColorStop(0, th.stops[2]);
+        bgGrad.addColorStop(0.55, "#0F0D0A");
+        bgGrad.addColorStop(1, "#070605");
+        c.fillStyle = bgGrad;
+        c.fillRect(0, 0, CW, CH);
+
+        var halo = c.createRadialGradient(CW * 0.5, CH * 0.46, 60, CW * 0.5, CH * 0.48, CW * 0.85);
+        halo.addColorStop(0, th.stops[0] + "88");
+        halo.addColorStop(0.55, th.stops[1] + "33");
+        halo.addColorStop(1, "rgba(0,0,0,0)");
+        c.fillStyle = halo;
+        c.fillRect(0, 0, CW, CH);
+
+        if (paperImg) {
+          c.save();
+          c.globalAlpha = 0.06;
+          c.globalCompositeOperation = "soft-light";
+          var bgPat = c.createPattern(paperImg, "repeat");
+          if (bgPat) { c.fillStyle = bgPat; c.fillRect(0, 0, CW, CH); }
+          c.restore();
+        }
+      }
+
+      // Apple/Spotify-style 2-tier elevation drop shadow behind the floating card
+      c.save();
+      c.shadowColor = isStory ? "rgba(0,0,0,0.62)" : "rgba(0,0,0,0.46)";
+      c.shadowBlur = 44;
+      c.shadowOffsetX = 0;
+      c.shadowOffsetY = 20;
+      drawRoundedRect(c, OX, OY, W, H, 36);
+      c.fillStyle = th.stops[1];
+      c.fill();
+      c.restore();
+
+      c.save();
+      c.shadowColor = "rgba(0,0,0,0.28)";
+      c.shadowBlur = 12;
+      c.shadowOffsetX = 0;
+      c.shadowOffsetY = 4;
+      drawRoundedRect(c, OX, OY, W, H, 36);
+      c.fillStyle = th.stops[1];
+      c.fill();
+      c.restore();
+
+      // Translate into card coordinate space (0..W, 0..H)
+      c.save();
+      c.translate(OX, OY);
+      drawRoundedRect(c, 0, 0, W, H, 36);
+      c.clip();
 
       // 1. Matte organic mineral-pigment gradient
-      drawRoundedRect(c, 0, 0, W, H, 44);
-      c.save();
-      c.clip();
       var grad = c.createLinearGradient(0, 0, W * 0.25, H);
       grad.addColorStop(0, th.stops[0]);
       grad.addColorStop(0.54, th.stops[1]);
@@ -880,36 +959,31 @@
       c.fillStyle = grad;
       c.fillRect(0, 0, W, H);
 
-      // Soft organic vignette
-      var vig = c.createRadialGradient(W * 0.5, H * 0.38, W * 0.15, W * 0.5, H * 0.5, W * 0.9);
+      var vig = c.createRadialGradient(W * 0.5, H * 0.36, W * 0.14, W * 0.5, H * 0.5, W * 0.92);
       vig.addColorStop(0, "rgba(255,255,255,0.03)");
       vig.addColorStop(1, "rgba(0,0,0,0.18)");
       c.fillStyle = vig;
       c.fillRect(0, 0, W, H);
 
-      // Seamless generated handmade Persian manuscript paper texture overlay
       if (paperImg) {
         c.save();
         c.globalAlpha = 0.11;
         c.globalCompositeOperation = "soft-light";
         var pat = c.createPattern(paperImg, "repeat");
-        if (pat) {
-          c.fillStyle = pat;
-          c.fillRect(0, 0, W, H);
-        }
+        if (pat) { c.fillStyle = pat; c.fillRect(0, 0, W, H); }
         c.restore();
       }
 
-      // 2. Thin Tazhib hairline frame + 4 generated Tazhib corner lachak ornaments inside card bounds
-      var inset = 28;
+      // 2. Thin Tazhib hairline frame + 4 curved Tazhib corners
+      var inset = 22;
       c.strokeStyle = th.frame;
-      c.lineWidth = 1.4;
-      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 26);
+      c.lineWidth = 1.3;
+      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 22);
       c.stroke();
 
       if (cornerImg) {
-        var cSize = 62;
-        var cPad = 28;
+        var cSize = 52;
+        var cPad = 22;
         var corners = [
           [cPad, cPad, 1, 1],
           [W - cPad, cPad, -1, 1],
@@ -917,6 +991,8 @@
           [W - cPad, H - cPad, -1, -1]
         ];
         c.save();
+        drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 22);
+        c.clip();
         c.globalAlpha = th.key === "gold" ? 0.56 : 0.72;
         corners.forEach(function (pt) {
           c.save();
@@ -928,23 +1004,22 @@
         c.restore();
       }
 
-      // 3. Top RTL Header: Miniature-framed story cover + Scene Title + "فردوسی · شاهنامه"
-      var covSize = 195;
+      // 3. Top RTL Header: Miniature-framed cover (156px) + optically centered Scene Title & "فردوسی · شاهنامه"
       var covX = W - PAD - covSize;
       var covY = PAD;
       c.save();
       c.fillStyle = "rgba(0,0,0,0.22)";
-      drawRoundedRect(c, covX - 6, covY - 6, covSize + 12, covSize + 12, 22);
+      drawRoundedRect(c, covX - 5, covY - 5, covSize + 10, covSize + 10, 18);
       c.fill();
       c.strokeStyle = th.accent;
       c.globalAlpha = 0.65;
-      c.lineWidth = 1.8;
-      drawRoundedRect(c, covX - 6, covY - 6, covSize + 12, covSize + 12, 22);
+      c.lineWidth = 1.6;
+      drawRoundedRect(c, covX - 5, covY - 5, covSize + 10, covSize + 10, 18);
       c.stroke();
       c.restore();
 
       c.save();
-      drawRoundedRect(c, covX, covY, covSize, covSize, 16);
+      drawRoundedRect(c, covX, covY, covSize, covSize, 14);
       c.clip();
       if (coverImg) {
         var iw = coverImg.naturalWidth || coverImg.width, ih = coverImg.naturalHeight || coverImg.height;
@@ -960,7 +1035,7 @@
       c.direction = "rtl";
       c.textAlign = "right";
       c.textBaseline = "middle";
-      var textX = covX - 32;
+      var textX = covX - 26;
       var maxTitleW = textX - PAD;
       c.font = titleFont;
       c.fillStyle = th.ink;
@@ -968,11 +1043,11 @@
       while (titleText.length > 4 && c.measureText(titleText).width > maxTitleW) {
         titleText = titleText.slice(0, -2) + "…";
       }
-      c.fillText(titleText, textX, covY + 75);
+      c.fillText(titleText, textX, covY + 58);
 
       c.font = subFont;
       c.fillStyle = th.muted;
-      c.fillText("فردوسی · شاهنامه", textX, covY + 121);
+      c.fillText("فردوسی · شاهنامه", textX, covY + 100);
 
       // 4. Poetic Verses
       c.font = verseFont;
@@ -1000,25 +1075,20 @@
         }
       });
 
-      // 5. Minimalist Footer with generated Tazhib shamsa + URL
-      var footY = H - PAD - 8;
+      // 5. Minimalist Footer
+      var footY = H - PAD - 6;
       c.strokeStyle = th.divider;
-      c.lineWidth = 1.2;
+      c.lineWidth = 1.1;
       c.beginPath();
-      c.moveTo(PAD, footY - 42);
-      c.lineTo(W - PAD, footY - 42);
+      c.moveTo(PAD, footY - 36);
+      c.lineTo(W - PAD, footY - 36);
       c.stroke();
 
       if (shamsaImg) {
         c.save();
         c.globalAlpha = 0.9;
-        c.drawImage(shamsaImg, W - PAD - 32, footY - 20, 32, 32);
+        c.drawImage(shamsaImg, W - PAD - 28, footY - 17, 28, 28);
         c.restore();
-      } else {
-        c.fillStyle = th.accent;
-        c.beginPath();
-        c.arc(W - PAD - 9, footY - 4, 6, 0, Math.PI * 2);
-        c.fill();
       }
 
       c.direction = "ltr";
@@ -1026,7 +1096,17 @@
       c.textBaseline = "middle";
       c.font = urlFont;
       c.fillStyle = th.muted;
-      c.fillText("bardiakhosravi.ir/shahnameh", PAD, footY - 4);
+      c.fillText("bardiakhosravi.ir/shahnameh", PAD, footY - 3);
+
+      // 6. Apple-style directional 1.5px specular edge rim light (makes card pop forward)
+      var rim = c.createLinearGradient(0, 0, 0, H);
+      rim.addColorStop(0, th.key === "gold" ? "rgba(255,249,224,0.62)" : "rgba(255,255,255,0.34)");
+      rim.addColorStop(0.28, "rgba(255,255,255,0.10)");
+      rim.addColorStop(1, "rgba(0,0,0,0.28)");
+      c.strokeStyle = rim;
+      c.lineWidth = 2;
+      drawRoundedRect(c, 1, 1, W - 2, H - 2, 35);
+      c.stroke();
 
       c.restore();
       return canvas;
@@ -1050,7 +1130,7 @@
     if (!ctxData) return;
     shareState.busy = true;
     setShareStatus("در حال ساخت تصویر باکیفیت…");
-    var fname = "shahnameh-" + (ART_MAP[ctxData.e.t] || "verse") + "-" + (shareState.selected[0] + 1) + ".png";
+    var fname = "shahnameh-" + (ART_MAP[ctxData.e.t] || "verse") + "-" + (shareState.selected[0] + 1) + (shareState.format === "story" ? "-story" : "") + ".png";
     renderShareCanvas().then(function (canvas) {
       return new Promise(function (resolve, reject) {
         canvas.toBlob(function (blob) {
@@ -1118,6 +1198,7 @@
     else if (d.a === "sh-close") closeShareSheet();
     else if (d.a === "sh-download") exportSharePng("download");
     else if (d.a === "sh-native") exportSharePng("native");
+    else if (d.shFmt) { shareState.format = d.shFmt; store.set("sm-share-format", d.shFmt); updateSharePreview(); }
     else if (d.shTheme) { shareState.theme = d.shTheme; store.set("sm-share-theme", d.shTheme); updateSharePreview(); }
     else if (d.shVerse != null) toggleShareVerse(+d.shVerse);
     else if (d.a === "per") { perPage = perPage >= 3 ? 1 : perPage + 1; store.set("sm-per", perPage); showCouplet(1); }
