@@ -657,14 +657,26 @@
       '</div>' +
     '</div>';
     if (!isStory) return cardHtml;
-    var stageBg = "radial-gradient(circle at 50% 42%, " + th.stops[0] + "55, " + th.stops[2] + " 68%, #090806 100%)";
-    return '<div class="sh-story-stage" style="background:' + stageBg + '">' + cardHtml + '</div>';
+    var stageBg = "radial-gradient(circle at 50% 47%, " + th.stops[0] + "88 0%, " + th.stops[1] + "33 55%, transparent 100%), linear-gradient(164deg, " + th.stops[2] + " 0%, #0F0D0A 55%, #070605 100%)";
+    return '<div class="sh-story-stage" style="background:' + stageBg + '"><span class="sh-stage-paper" aria-hidden="true"></span>' + cardHtml + '</div>';
+  }
+  function fitStoryPreview() {
+    var stage = document.querySelector("#smShareCardWrap .sh-story-stage");
+    var card = $("smShareCard");
+    if (!stage || !card) return;
+    card.style.transform = "";
+    var sw = stage.clientWidth, sh = stage.clientHeight;
+    var cw = card.offsetWidth, ch = card.offsetHeight;
+    if (!sw || !sh || !cw || !ch) return;
+    var scale = Math.min((sw * 0.704) / cw, (sh * 0.86) / ch);
+    card.style.transform = "scale(" + scale.toFixed(4) + ")";
   }
   function updateSharePreview() {
     var ctx = shareContext();
     if (!ctx) return;
     var wrap = $("smShareCardWrap");
     if (wrap) wrap.innerHTML = shareCardHTML(ctx);
+    fitStoryPreview();
     var cnt = $("smShareCount");
     if (cnt) cnt.textContent = fa(shareState.selected.length) + " از " + fa(SHARE_MAX) + " بیت انتخاب‌شده";
     var fm = $("smShareFormats");
@@ -760,6 +772,7 @@
       if (ev.target === ov) closeShareSheet();
     });
     root.appendChild(ov);
+    fitStoryPreview();
     var activeItem = ov.querySelector(".sh-vitem.on");
     if (activeItem && activeItem.scrollIntoView) {
       try { activeItem.scrollIntoView({ block: "nearest" }); } catch (e) {}
@@ -855,17 +868,17 @@
       loadImageAsset(shamsaSrc)
     ]).then(function (res) {
       var coverImg = res[1], cornerImg = res[2], paperImg = res[3], shamsaImg = res[4];
-      var W = 760;
-      var PAD = 64;
+      var W = 680;
+      var PAD = 68;
       var INNER_W = W - PAD * 2;
       var count = shareState.selected.length;
-      var verseSize = count === 1 ? 46 : (count === 2 ? 41 : (count === 3 ? 36 : 32));
+      var verseSize = count === 1 ? 42 : (count === 2 ? 37 : (count === 3 ? 33 : 29));
       var lineH = Math.round(verseSize * 1.94);
-      var coupletGap = count <= 2 ? 34 : 24;
+      var coupletGap = count <= 2 ? 30 : 22;
       var verseFont = '400 ' + verseSize + 'px "Gulzar", "IranNastaliq", "Noto Nastaliq Urdu", "Amiri", serif';
-      var titleFont = '700 30px "Vazirmatn", system-ui, sans-serif';
-      var subFont = '500 21px "Vazirmatn", system-ui, sans-serif';
-      var urlFont = '500 18px "Vazirmatn", system-ui, sans-serif';
+      var titleFont = '700 28px "Vazirmatn", system-ui, sans-serif';
+      var subFont = '500 20px "Vazirmatn", system-ui, sans-serif';
+      var urlFont = '500 17px "Vazirmatn", system-ui, sans-serif';
 
       var meas = document.createElement("canvas").getContext("2d");
       meas.font = verseFont;
@@ -880,17 +893,20 @@
       var totalLines = 0;
       blocks.forEach(function (bl) { totalLines += bl.h1.length + bl.h2.length; });
       var versesH = totalLines * lineH + Math.max(0, blocks.length - 1) * coupletGap;
-      var covSize = 156;
-      var HEADER_H = 166;
-      var FOOTER_H = 62;
-      var TOP_GAP = 48;
-      var BOT_GAP = 46;
+      var covSize = 138;
+      var HEADER_H = 148;
+      var FOOTER_H = 58;
+      var TOP_GAP = 44;
+      var BOT_GAP = 42;
       var H = PAD + HEADER_H + TOP_GAP + versesH + BOT_GAP + FOOTER_H + PAD;
 
-      var CW = isStory ? 1080 : (W + 96);
-      var CH = isStory ? 1920 : (H + 112);
-      var OX = Math.round((CW - W) / 2);
-      var OY = isStory ? Math.round((CH - H) / 2) : 36;
+      var CW = isStory ? 1080 : W;
+      var CH = isStory ? 1920 : H;
+      var storyScale = isStory ? Math.min(1.12, (CW - 180) / W, (CH - 260) / H) : 1;
+      var drawW = W * storyScale;
+      var drawH = H * storyScale;
+      var OX = isStory ? Math.round((CW - drawW) / 2) : 0;
+      var OY = isStory ? Math.round((CH - drawH) / 2) : 0;
 
       var canvas = document.createElement("canvas");
       canvas.width = CW;
@@ -924,30 +940,33 @@
         }
       }
 
-      // Apple/Spotify-style 2-tier elevation drop shadow behind the floating card
-      c.save();
-      c.shadowColor = isStory ? "rgba(0,0,0,0.62)" : "rgba(0,0,0,0.46)";
-      c.shadowBlur = 44;
-      c.shadowOffsetX = 0;
-      c.shadowOffsetY = 20;
-      drawRoundedRect(c, OX, OY, W, H, 36);
-      c.fillStyle = th.stops[1];
-      c.fill();
-      c.restore();
+      if (isStory) {
+        // Apple/Spotify-style 2-tier elevation drop shadow behind the floating card in 9:16 Story Mode
+        c.save();
+        c.shadowColor = "rgba(0,0,0,0.62)";
+        c.shadowBlur = 44;
+        c.shadowOffsetX = 0;
+        c.shadowOffsetY = 20;
+        drawRoundedRect(c, OX, OY, drawW, drawH, 36 * storyScale);
+        c.fillStyle = th.stops[1];
+        c.fill();
+        c.restore();
 
-      c.save();
-      c.shadowColor = "rgba(0,0,0,0.28)";
-      c.shadowBlur = 12;
-      c.shadowOffsetX = 0;
-      c.shadowOffsetY = 4;
-      drawRoundedRect(c, OX, OY, W, H, 36);
-      c.fillStyle = th.stops[1];
-      c.fill();
-      c.restore();
+        c.save();
+        c.shadowColor = "rgba(0,0,0,0.28)";
+        c.shadowBlur = 12;
+        c.shadowOffsetX = 0;
+        c.shadowOffsetY = 4;
+        drawRoundedRect(c, OX, OY, drawW, drawH, 36 * storyScale);
+        c.fillStyle = th.stops[1];
+        c.fill();
+        c.restore();
+      }
 
       // Translate into card coordinate space (0..W, 0..H)
       c.save();
       c.translate(OX, OY);
+      c.scale(storyScale, storyScale);
       drawRoundedRect(c, 0, 0, W, H, 36);
       c.clip();
 
@@ -975,15 +994,15 @@
       }
 
       // 2. Thin Tazhib hairline frame + 4 curved Tazhib corners
-      var inset = 22;
+      var inset = 18;
       c.strokeStyle = th.frame;
       c.lineWidth = 1.3;
-      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 22);
+      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 20);
       c.stroke();
 
       if (cornerImg) {
-        var cSize = 52;
-        var cPad = 22;
+        var cSize = 42;
+        var cPad = 18;
         var corners = [
           [cPad, cPad, 1, 1],
           [W - cPad, cPad, -1, 1],
@@ -991,7 +1010,7 @@
           [W - cPad, H - cPad, -1, -1]
         ];
         c.save();
-        drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 22);
+        drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 20);
         c.clip();
         c.globalAlpha = th.key === "gold" ? 0.56 : 0.72;
         corners.forEach(function (pt) {
@@ -1043,11 +1062,11 @@
       while (titleText.length > 4 && c.measureText(titleText).width > maxTitleW) {
         titleText = titleText.slice(0, -2) + "…";
       }
-      c.fillText(titleText, textX, covY + 58);
+      c.fillText(titleText, textX, covY + 52);
 
       c.font = subFont;
       c.fillStyle = th.muted;
-      c.fillText("فردوسی · شاهنامه", textX, covY + 100);
+      c.fillText("فردوسی · شاهنامه", textX, covY + 92);
 
       // 4. Poetic Verses
       c.font = verseFont;
