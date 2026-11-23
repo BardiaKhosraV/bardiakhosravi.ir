@@ -149,7 +149,10 @@
     home: "M4 11l8-7 8 7v9H4z M10 20v-6h4v6",
     bookmark: "M7 4h10v17l-5-4-5 4z",
     openbook: "M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z M12 6v14",
-    lines: "M5 6h14 M5 10h14 M5 14h14 M5 18h9"
+    lines: "M5 6h14 M5 10h14 M5 14h14 M5 18h9",
+    share: "M12 3v12 M7 8l5-5 5 5 M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4",
+    download: "M12 3v12 M7 10l5 5 5-5 M5 19h14",
+    x: "M6 6l12 12 M18 6L6 18"
   };
 
   var SVG_ESLIMI = '<svg width="24" height="24" viewBox="0 0 48 48" aria-hidden="true">' +
@@ -418,7 +421,7 @@
     root.innerHTML = '<div class="sm-rd view"><div class="top"><button class="sm-x" data-a="ep">' + ic("back") + '</button><b>' + esc(e.dt) + '</b><span>صحنهٔ ' + fa(state.k + 1) + ' از ' + fa(e.sc.length) + '</span></div>' +
       '<div class="sm-prog"><i id="smP"></i></div><div class="sm-scene">' + esc(sc.t) + '</div>' +
       '<div class="sm-stage" id="smSt">' + cornersHTML() + '</div>' +
-      '<div class="sm-ctl"><button data-a="prev" aria-label="بیت قبلی">' + ic("back") + '</button><button id="smFav" data-a="fav" aria-label="نشان‌گذاری">' + ic("heart") + '</button><button class="main" id="smPlay" data-a="play" aria-label="پخش خودکار">' + icFill("play") + '</button><button class="per" id="smPer" data-a="per" aria-label="تعداد بیت در صفحه"></button><button class="spd" id="smSpd" data-a="spd" aria-label="سرعت"></button><button data-a="next" aria-label="بیت بعدی">' + ic("next") + '</button></div>' +
+      '<div class="sm-ctl"><button data-a="prev" aria-label="بیت قبلی">' + ic("back") + '</button><button id="smFav" data-a="fav" aria-label="نشان‌گذاری">' + ic("heart") + '</button><button id="smShare" data-a="share" aria-label="اشتراک‌گذاری بیت">' + ic("share") + '</button><button class="main" id="smPlay" data-a="play" aria-label="پخش خودکار">' + icFill("play") + '</button><button class="per" id="smPer" data-a="per" aria-label="تعداد بیت در صفحه"></button><button class="spd" id="smSpd" data-a="spd" aria-label="سرعت"></button><button data-a="next" aria-label="بیت بعدی">' + ic("next") + '</button></div>' +
       '<div class="sm-hint t-meta" id="smH"></div></div>';
     var st = $("smSt"), x0 = null, swiped = false;
     st.addEventListener("touchstart", function (ev) { x0 = ev.touches[0].clientX; swiped = false; }, { passive: true });
@@ -476,6 +479,7 @@
     }
     var f = $("smFav");
     if (f) { var on = bm().some(function (m) { return m.s === si && m.b === state.bi; }); f.classList.toggle("on", on); f.innerHTML = on ? icFill("heart") : ic("heart"); f.style.visibility = state.bi >= len ? "hidden" : ""; }
+    var sh = $("smShare"); if (sh) sh.style.visibility = state.bi >= len ? "hidden" : "";
     var pl = $("smPlay"); if (pl) pl.innerHTML = playing ? ic("pause") : icFill("play");
     var sp = $("smSpd"); if (sp) sp.textContent = speed < 5000 ? "تند" : speed < 8000 ? "متوسط" : "آرام";
     var pr = $("smPer"); if (pr) pr.textContent = fa(perPage) + " بیت";
@@ -526,6 +530,569 @@
     if (!fromHash) syncHistory("push");
   }
 
+
+  /* ---- Spotify-Inspired Lyrics Sharing (Focus Mode) ---- */
+  var SHARE_ASSETS = {
+    cornerGold: "/shahnameh-assets/images/tazhib-corner.png",
+    cornerBronze: "/shahnameh-assets/images/tazhib-corner-bronze.png",
+    shamsa: "/shahnameh-assets/images/tazhib-shamsa.png",
+    paper: "/shahnameh-assets/images/manuscript-paper.webp"
+  };
+  var SHARE_THEMES = [
+    {
+      key: "turquoise",
+      name: "فیروزه‌ای لاجوردی",
+      stops: ["#135D69", "#0E4350", "#082732"],
+      ink: "#F7F1E3",
+      muted: "rgba(247, 241, 227, .74)",
+      accent: "#D9BC6A",
+      frame: "rgba(217, 188, 106, .30)",
+      divider: "rgba(247, 241, 227, .16)",
+      verseDiv: "rgba(247, 241, 227, .07)",
+      corner: "cornerGold"
+    },
+    {
+      key: "plum",
+      name: "عنابی و آلویی",
+      stops: ["#5C1F30", "#3E1422", "#240A13"],
+      ink: "#F7F1E3",
+      muted: "rgba(247, 241, 227, .74)",
+      accent: "#D9BC6A",
+      frame: "rgba(217, 188, 106, .30)",
+      divider: "rgba(247, 241, 227, .16)",
+      verseDiv: "rgba(247, 241, 227, .07)",
+      corner: "cornerGold"
+    },
+    {
+      key: "green",
+      name: "سبز زمردی",
+      stops: ["#155644", "#0E3D31", "#07241D"],
+      ink: "#F7F1E3",
+      muted: "rgba(247, 241, 227, .74)",
+      accent: "#D9BC6A",
+      frame: "rgba(217, 188, 106, .30)",
+      divider: "rgba(247, 241, 227, .16)",
+      verseDiv: "rgba(247, 241, 227, .07)",
+      corner: "cornerGold"
+    },
+    {
+      key: "gold",
+      name: "طلای کهن",
+      stops: ["#D4B35E", "#C9A23F", "#A68029"],
+      ink: "#161006",
+      muted: "rgba(22, 16, 6, .74)",
+      accent: "#463109",
+      frame: "rgba(70, 49, 9, .32)",
+      divider: "rgba(22, 16, 6, .18)",
+      verseDiv: "rgba(22, 16, 6, .08)",
+      corner: "cornerBronze"
+    },
+    {
+      key: "blue",
+      name: "لاجوردی عمیق",
+      stops: ["#1B355C", "#122442", "#091429"],
+      ink: "#F7F1E3",
+      muted: "rgba(247, 241, 227, .74)",
+      accent: "#D9BC6A",
+      frame: "rgba(217, 188, 106, .30)",
+      divider: "rgba(247, 241, 227, .16)",
+      verseDiv: "rgba(247, 241, 227, .07)",
+      corner: "cornerGold"
+    }
+  ];
+  var SHARE_MAX = 4;
+  var shareState = {
+    open: false,
+    theme: store.get("sm-share-theme", "turquoise"),
+    selected: [],
+    busy: false
+  };
+  function getShareTheme() {
+    for (var i = 0; i < SHARE_THEMES.length; i++) {
+      if (SHARE_THEMES[i].key === shareState.theme) return SHARE_THEMES[i];
+    }
+    return SHARE_THEMES[0];
+  }
+  function shareContext() {
+    var e = EP[state.ei];
+    if (!e) return null;
+    var si = e.sc[state.k], sc = S[si];
+    if (!sc || !sc.b.length) return null;
+    return { e: e, si: si, sc: sc, im: imgOf(e) };
+  }
+  function shareCardHTML(ctx) {
+    var th = getShareTheme();
+    var grad = "linear-gradient(162deg, " + th.stops[0] + " 0%, " + th.stops[1] + " 54%, " + th.stops[2] + " 100%)";
+    var cornerSrc = SHARE_ASSETS[th.corner] || SHARE_ASSETS.cornerGold;
+    var versesHtml = shareState.selected.map(function (idx) {
+      var b = ctx.sc.b[idx];
+      if (!b) return "";
+      return '<div class="sh-couplet">' +
+        '<span class="sh-h1">' + esc(b[0]) + '</span>' +
+        (b[1] ? '<span class="sh-h2">' + esc(b[1]) + '</span>' : '') +
+      '</div>';
+    }).join("");
+    return '<div class="sh-card" id="smShareCard" style="background:' + grad + ';color:' + th.ink + ';--sh-ink:' + th.ink + ';--sh-mut:' + th.muted + ';--sh-acc:' + th.accent + ';--sh-frame:' + th.frame + ';--sh-div:' + th.divider + ';--sh-vdiv:' + th.verseDiv + '">' +
+      '<span class="sh-paper" aria-hidden="true"></span>' +
+      '<span class="sh-frame" aria-hidden="true"></span>' +
+      '<img class="sh-cor tl" alt="" src="' + cornerSrc + '" aria-hidden="true">' +
+      '<img class="sh-cor tr" alt="" src="' + cornerSrc + '" aria-hidden="true">' +
+      '<img class="sh-cor bl" alt="" src="' + cornerSrc + '" aria-hidden="true">' +
+      '<img class="sh-cor br" alt="" src="' + cornerSrc + '" aria-hidden="true">' +
+      '<div class="sh-head">' +
+        '<span class="sh-cover-mat"><img class="sh-cover" alt="' + esc(ctx.sc.t) + '" src="' + ctx.im.m + '"></span>' +
+        '<div class="sh-meta">' +
+          '<b class="sh-title">' + esc(ctx.sc.t) + '</b>' +
+          '<span class="sh-sub">فردوسی · شاهنامه</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sh-verses sh-count-' + shareState.selected.length + '">' + versesHtml + '</div>' +
+      '<div class="sh-foot">' +
+        '<img class="sh-emblem-img" alt="" src="' + SHARE_ASSETS.shamsa + '" aria-hidden="true">' +
+        '<span class="sh-url" dir="ltr">bardiakhosravi.ir/shahnameh</span>' +
+      '</div>' +
+    '</div>';
+  }
+  function updateSharePreview() {
+    var ctx = shareContext();
+    if (!ctx) return;
+    var wrap = $("smShareCardWrap");
+    if (wrap) wrap.innerHTML = shareCardHTML(ctx);
+    var cnt = $("smShareCount");
+    if (cnt) cnt.textContent = fa(shareState.selected.length) + " از " + fa(SHARE_MAX) + " بیت انتخاب‌شده";
+    var sw = $("smShareSwatches");
+    if (sw) {
+      Array.prototype.forEach.call(sw.children, function (btn) {
+        var on = btn.dataset.shTheme === shareState.theme;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+    var list = $("smShareList");
+    if (list) {
+      Array.prototype.forEach.call(list.children, function (btn) {
+        var idx = +btn.dataset.shVerse;
+        var on = shareState.selected.indexOf(idx) >= 0;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+  }
+  function openShareSheet() {
+    var ctx = shareContext();
+    if (!ctx || state.bi >= ctx.sc.b.length) return;
+    stop();
+    var pl = $("smPlay"); if (pl) pl.innerHTML = icFill("play");
+    shareState.open = true;
+    shareState.selected = [];
+    var endBi = Math.min(ctx.sc.b.length, state.bi + perPage);
+    for (var i = state.bi; i < endBi && shareState.selected.length < SHARE_MAX; i++) {
+      shareState.selected.push(i);
+    }
+    if (!shareState.selected.length) shareState.selected.push(state.bi);
+
+    var old = $("smShareOverlay");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    var swatchesHtml = SHARE_THEMES.map(function (th) {
+      var on = th.key === shareState.theme;
+      var bg = "linear-gradient(145deg, " + th.stops[0] + ", " + th.stops[2] + ")";
+      return '<button type="button" class="sh-swatch' + (on ? " on" : "") + '" data-sh-theme="' + th.key + '" title="' + th.name + '" aria-label="تم رنگی ' + th.name + '" aria-pressed="' + (on ? "true" : "false") + '" style="background:' + bg + '"></button>';
+    }).join("");
+
+    var winStart = Math.max(0, state.bi - 8);
+    var winEnd = Math.min(ctx.sc.b.length, state.bi + 16);
+    var pickerHtml = "";
+    for (var vi = winStart; vi < winEnd; vi++) {
+      var b = ctx.sc.b[vi];
+      var isSel = shareState.selected.indexOf(vi) >= 0;
+      pickerHtml += '<button type="button" class="sh-vitem' + (isSel ? " on" : "") + '" data-sh-verse="' + vi + '" aria-pressed="' + (isSel ? "true" : "false") + '">' +
+        '<span class="sh-vnum">' + fa(vi + 1) + '</span>' +
+        '<span class="sh-vtxt"><span>' + esc(b[0]) + '</span>' + (b[1] ? '<span>' + esc(b[1]) + '</span>' : '') + '</span>' +
+      '</button>';
+    }
+
+    var ov = document.createElement("div");
+    ov.id = "smShareOverlay";
+    ov.className = "sh-overlay";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", "اشتراک‌گذاری بیت");
+    ov.setAttribute("tabindex", "-1");
+    ov.innerHTML =
+      '<div class="sh-sheet">' +
+        '<div class="sh-top">' +
+          '<b>اشتراک‌گذاری بیت</b>' +
+          '<button type="button" class="sm-x sh-close" data-a="sh-close" aria-label="بستن">' + ic("x") + '</button>' +
+        '</div>' +
+        '<div class="sh-preview-wrap" id="smShareCardWrap">' + shareCardHTML(ctx) + '</div>' +
+        '<div class="sh-swatches" id="smShareSwatches" role="group" aria-label="رنگ کارت">' + swatchesHtml + '</div>' +
+        '<div class="sh-picker-head"><span>انتخاب ابیات (تا ۴ بیت)</span><span id="smShareCount">' + fa(shareState.selected.length) + ' از ' + fa(SHARE_MAX) + ' بیت انتخاب‌شده</span></div>' +
+        '<div class="sh-picker" id="smShareList">' + pickerHtml + '</div>' +
+        '<div class="sh-status" id="smShareStatus" aria-live="polite"></div>' +
+        '<div class="sh-actions">' +
+          '<button type="button" class="sh-btn-primary" id="smShareNative" data-a="sh-native">' + ic("share") + '<span>اشتراک‌گذاری</span></button>' +
+          '<button type="button" class="sh-btn-sec" id="smShareDl" data-a="sh-download">' + ic("download") + '<span>ذخیرهٔ تصویر (PNG)</span></button>' +
+        '</div>' +
+      '</div>';
+
+    ov.addEventListener("click", function (ev) {
+      if (ev.target === ov) closeShareSheet();
+    });
+    root.appendChild(ov);
+    var activeItem = ov.querySelector(".sh-vitem.on");
+    if (activeItem && activeItem.scrollIntoView) {
+      try { activeItem.scrollIntoView({ block: "nearest" }); } catch (e) {}
+    }
+    try { ov.focus({ preventScroll: true }); } catch (e) { ov.focus(); }
+  }
+  function closeShareSheet() {
+    shareState.open = false;
+    shareState.busy = false;
+    var ov = $("smShareOverlay");
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+    var btn = $("smShare");
+    if (btn && typeof btn.focus === "function") {
+      try { btn.focus({ preventScroll: true }); } catch (e) { btn.focus(); }
+    }
+  }
+  function setShareStatus(msg) {
+    var el = $("smShareStatus");
+    if (el) el.textContent = msg || "";
+  }
+  function toggleShareVerse(idx) {
+    var pos = shareState.selected.indexOf(idx);
+    if (pos >= 0) {
+      if (shareState.selected.length <= 1) {
+        setShareStatus("حداقل یک بیت باید انتخاب بماند.");
+        return;
+      }
+      shareState.selected.splice(pos, 1);
+    } else {
+      if (shareState.selected.length >= SHARE_MAX) {
+        setShareStatus("حداکثر ۴ بیت هم‌زمان قابل انتخاب است.");
+        return;
+      }
+      shareState.selected.push(idx);
+      shareState.selected.sort(function (a, b) { return a - b; });
+    }
+    setShareStatus("");
+    updateSharePreview();
+  }
+  function drawRoundedRect(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+  function wrapPersianLines(c, text, maxW) {
+    var words = String(text || "").trim().split(/\s+/);
+    var lines = [], cur = "";
+    for (var i = 0; i < words.length; i++) {
+      var test = cur ? cur + " " + words[i] : words[i];
+      if (c.measureText(test).width <= maxW || !cur) {
+        cur = test;
+      } else {
+        lines.push(cur);
+        cur = words[i];
+      }
+    }
+    if (cur) lines.push(cur);
+    return lines.length ? lines : [""];
+  }
+  function loadImageAsset(src) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+  function renderShareCanvas() {
+    var ctxData = shareContext();
+    if (!ctxData) return Promise.reject(new Error("No active verse"));
+    var th = getShareTheme();
+    var cornerSrc = SHARE_ASSETS[th.corner] || SHARE_ASSETS.cornerGold;
+    var fontsReady = (document.fonts && document.fonts.ready)
+      ? Promise.all([
+          document.fonts.load('400 50px "Gulzar"').catch(function () {}),
+          document.fonts.load('700 36px "Vazirmatn"').catch(function () {}),
+          document.fonts.load('500 25px "Vazirmatn"').catch(function () {}),
+          document.fonts.ready
+        ])
+      : Promise.resolve();
+    return Promise.all([
+      fontsReady,
+      loadImageAsset(ctxData.im.h || ctxData.im.m),
+      loadImageAsset(cornerSrc),
+      loadImageAsset(SHARE_ASSETS.paper),
+      loadImageAsset(SHARE_ASSETS.shamsa)
+    ]).then(function (res) {
+      var coverImg = res[1], cornerImg = res[2], paperImg = res[3], shamsaImg = res[4];
+      var W = 980;
+      var PAD = 82;
+      var INNER_W = W - PAD * 2;
+      var count = shareState.selected.length;
+      var verseSize = count === 1 ? 58 : (count === 2 ? 50 : (count === 3 ? 44 : 39));
+      var lineH = Math.round(verseSize * 1.94);
+      var coupletGap = count <= 2 ? 42 : 28;
+      var verseFont = '400 ' + verseSize + 'px "Gulzar", "IranNastaliq", "Noto Nastaliq Urdu", "Amiri", serif';
+      var titleFont = '700 36px "Vazirmatn", system-ui, sans-serif';
+      var subFont = '500 25px "Vazirmatn", system-ui, sans-serif';
+      var urlFont = '500 22px "Vazirmatn", system-ui, sans-serif';
+
+      var meas = document.createElement("canvas").getContext("2d");
+      meas.font = verseFont;
+      var blocks = shareState.selected.map(function (idx) {
+        var b = ctxData.sc.b[idx] || ["", ""];
+        return {
+          h1: wrapPersianLines(meas, b[0], INNER_W),
+          h2: b[1] ? wrapPersianLines(meas, b[1], INNER_W) : []
+        };
+      });
+
+      var totalLines = 0;
+      blocks.forEach(function (bl) { totalLines += bl.h1.length + bl.h2.length; });
+      var versesH = totalLines * lineH + Math.max(0, blocks.length - 1) * coupletGap;
+      var HEADER_H = 210;
+      var FOOTER_H = 74;
+      var TOP_GAP = 54;
+      var BOT_GAP = 54;
+      var H = PAD + HEADER_H + TOP_GAP + versesH + BOT_GAP + FOOTER_H + PAD;
+
+      var canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      var c = canvas.getContext("2d");
+
+      // 1. Matte organic mineral-pigment gradient
+      drawRoundedRect(c, 0, 0, W, H, 44);
+      c.save();
+      c.clip();
+      var grad = c.createLinearGradient(0, 0, W * 0.25, H);
+      grad.addColorStop(0, th.stops[0]);
+      grad.addColorStop(0.54, th.stops[1]);
+      grad.addColorStop(1, th.stops[2]);
+      c.fillStyle = grad;
+      c.fillRect(0, 0, W, H);
+
+      // Soft organic vignette
+      var vig = c.createRadialGradient(W * 0.5, H * 0.38, W * 0.15, W * 0.5, H * 0.5, W * 0.9);
+      vig.addColorStop(0, "rgba(255,255,255,0.03)");
+      vig.addColorStop(1, "rgba(0,0,0,0.18)");
+      c.fillStyle = vig;
+      c.fillRect(0, 0, W, H);
+
+      // Seamless generated handmade Persian manuscript paper texture overlay
+      if (paperImg) {
+        c.save();
+        c.globalAlpha = 0.11;
+        c.globalCompositeOperation = "soft-light";
+        var pat = c.createPattern(paperImg, "repeat");
+        if (pat) {
+          c.fillStyle = pat;
+          c.fillRect(0, 0, W, H);
+        }
+        c.restore();
+      }
+
+      // 2. Thin Tazhib hairline frame + 4 generated Tazhib corner lachak ornaments inside card bounds
+      var inset = 28;
+      c.strokeStyle = th.frame;
+      c.lineWidth = 1.4;
+      drawRoundedRect(c, inset, inset, W - inset * 2, H - inset * 2, 26);
+      c.stroke();
+
+      if (cornerImg) {
+        var cSize = 62;
+        var cPad = 28;
+        var corners = [
+          [cPad, cPad, 1, 1],
+          [W - cPad, cPad, -1, 1],
+          [cPad, H - cPad, 1, -1],
+          [W - cPad, H - cPad, -1, -1]
+        ];
+        c.save();
+        c.globalAlpha = th.key === "gold" ? 0.56 : 0.72;
+        corners.forEach(function (pt) {
+          c.save();
+          c.translate(pt[0], pt[1]);
+          c.scale(pt[2], pt[3]);
+          c.drawImage(cornerImg, 0, 0, cSize, cSize);
+          c.restore();
+        });
+        c.restore();
+      }
+
+      // 3. Top RTL Header: Miniature-framed story cover + Scene Title + "فردوسی · شاهنامه"
+      var covSize = 195;
+      var covX = W - PAD - covSize;
+      var covY = PAD;
+      c.save();
+      c.fillStyle = "rgba(0,0,0,0.22)";
+      drawRoundedRect(c, covX - 6, covY - 6, covSize + 12, covSize + 12, 22);
+      c.fill();
+      c.strokeStyle = th.accent;
+      c.globalAlpha = 0.65;
+      c.lineWidth = 1.8;
+      drawRoundedRect(c, covX - 6, covY - 6, covSize + 12, covSize + 12, 22);
+      c.stroke();
+      c.restore();
+
+      c.save();
+      drawRoundedRect(c, covX, covY, covSize, covSize, 16);
+      c.clip();
+      if (coverImg) {
+        var iw = coverImg.naturalWidth || coverImg.width, ih = coverImg.naturalHeight || coverImg.height;
+        var scR = Math.max(covSize / iw, covSize / ih);
+        var dw = iw * scR, dh = ih * scR;
+        c.drawImage(coverImg, covX + (covSize - dw) / 2, covY + (covSize - dh) / 2, dw, dh);
+      } else {
+        c.fillStyle = th.divider;
+        c.fillRect(covX, covY, covSize, covSize);
+      }
+      c.restore();
+
+      c.direction = "rtl";
+      c.textAlign = "right";
+      c.textBaseline = "middle";
+      var textX = covX - 32;
+      var maxTitleW = textX - PAD;
+      c.font = titleFont;
+      c.fillStyle = th.ink;
+      var titleText = ctxData.sc.t;
+      while (titleText.length > 4 && c.measureText(titleText).width > maxTitleW) {
+        titleText = titleText.slice(0, -2) + "…";
+      }
+      c.fillText(titleText, textX, covY + 75);
+
+      c.font = subFont;
+      c.fillStyle = th.muted;
+      c.fillText("فردوسی · شاهنامه", textX, covY + 121);
+
+      // 4. Poetic Verses
+      c.font = verseFont;
+      c.fillStyle = th.ink;
+      c.textAlign = "right";
+      c.textBaseline = "alphabetic";
+      var curY = PAD + HEADER_H + TOP_GAP + Math.round(verseSize * 1.15);
+      blocks.forEach(function (bl, bi) {
+        bl.h1.forEach(function (line) {
+          c.fillText(line, W - PAD, curY);
+          curY += lineH;
+        });
+        bl.h2.forEach(function (line) {
+          c.fillText(line, W - PAD, curY);
+          curY += lineH;
+        });
+        if (bi < blocks.length - 1) {
+          c.strokeStyle = th.verseDiv;
+          c.lineWidth = 1;
+          c.beginPath();
+          c.moveTo(PAD, curY - lineH * 0.45);
+          c.lineTo(W - PAD, curY - lineH * 0.45);
+          c.stroke();
+          curY += coupletGap;
+        }
+      });
+
+      // 5. Minimalist Footer with generated Tazhib shamsa + URL
+      var footY = H - PAD - 8;
+      c.strokeStyle = th.divider;
+      c.lineWidth = 1.2;
+      c.beginPath();
+      c.moveTo(PAD, footY - 42);
+      c.lineTo(W - PAD, footY - 42);
+      c.stroke();
+
+      if (shamsaImg) {
+        c.save();
+        c.globalAlpha = 0.9;
+        c.drawImage(shamsaImg, W - PAD - 32, footY - 20, 32, 32);
+        c.restore();
+      } else {
+        c.fillStyle = th.accent;
+        c.beginPath();
+        c.arc(W - PAD - 9, footY - 4, 6, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      c.direction = "ltr";
+      c.textAlign = "left";
+      c.textBaseline = "middle";
+      c.font = urlFont;
+      c.fillStyle = th.muted;
+      c.fillText("bardiakhosravi.ir/shahnameh", PAD, footY - 4);
+
+      c.restore();
+      return canvas;
+    });
+  }
+  function triggerBlobDownload(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1500);
+  }
+  function exportSharePng(mode) {
+    if (shareState.busy) return;
+    var ctxData = shareContext();
+    if (!ctxData) return;
+    shareState.busy = true;
+    setShareStatus("در حال ساخت تصویر باکیفیت…");
+    var fname = "shahnameh-" + (ART_MAP[ctxData.e.t] || "verse") + "-" + (shareState.selected[0] + 1) + ".png";
+    renderShareCanvas().then(function (canvas) {
+      return new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) {
+          if (blob) resolve(blob);
+          else reject(new Error("Canvas toBlob failed"));
+        }, "image/png");
+      });
+    }).then(function (blob) {
+      var shareText = shareState.selected.map(function (i) {
+        var b = ctxData.sc.b[i];
+        return b ? (b[0] + (b[1] ? "\n" + b[1] : "")) : "";
+      }).join("\n\n") + "\n\n— " + ctxData.sc.t + " · فردوسی، شاهنامه";
+
+      if (mode === "native" && typeof navigator !== "undefined" && navigator.share) {
+        var file = null;
+        try { file = new File([blob], fname, { type: "image/png" }); } catch (e) {}
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({
+            files: [file],
+            title: ctxData.sc.t + " — فردوسی · شاهنامه",
+            text: shareText
+          }).then(function () {
+            setShareStatus("با موفقیت به اشتراک گذاشته شد.");
+          }).catch(function (err) {
+            if (err && err.name === "AbortError") {
+              setShareStatus("");
+            } else {
+              triggerBlobDownload(blob, fname);
+              setShareStatus("اشتراک‌گذاری مستقیم در دسترس نبود؛ تصویر دانلود شد.");
+            }
+          });
+        }
+      }
+      triggerBlobDownload(blob, fname);
+      setShareStatus(mode === "native" ? "مرورگر از اشتراک مستقیم فایل پشتیبانی نمی‌کند؛ تصویر ذخیره شد." : "تصویر با موفقیت ذخیره شد.");
+    }).catch(function () {
+      setShareStatus("ساخت تصویر با خطا مواجه شد؛ لطفاً دوباره تلاش کنید.");
+    }).then(function () {
+      shareState.busy = false;
+    });
+  }
+
   root.addEventListener("click", function (ev) {
     var t = ev.target.closest("button"); if (!t) return;
     var d = t.dataset;
@@ -547,21 +1114,33 @@
     else if (d.a === "next") go(1);
     else if (d.a === "prev") go(-1);
     else if (d.a === "fav") fav();
+    else if (d.a === "share") openShareSheet();
+    else if (d.a === "sh-close") closeShareSheet();
+    else if (d.a === "sh-download") exportSharePng("download");
+    else if (d.a === "sh-native") exportSharePng("native");
+    else if (d.shTheme) { shareState.theme = d.shTheme; store.set("sm-share-theme", d.shTheme); updateSharePreview(); }
+    else if (d.shVerse != null) toggleShareVerse(+d.shVerse);
     else if (d.a === "per") { perPage = perPage >= 3 ? 1 : perPage + 1; store.set("sm-per", perPage); showCouplet(1); }
     else if (d.a === "spd") { speed = speed >= 8000 ? 3500 : speed < 5000 ? 6000 : 9000; if (playing) schedule(); var s0 = EP[state.ei].sc[state.k]; sync(S[s0].b.length, s0); }
     else if (d.a === "play") { playing = !playing; if (playing) schedule(); else stop(); var s1 = EP[state.ei].sc[state.k]; sync(S[s1].b.length, s1); }
   });
   document.addEventListener("keydown", function (ev) {
     if (!root.classList.contains("on")) return;
+    var shOv = shareState.open ? $("smShareOverlay") : null;
     if (ev.key === "Tab") {
-      var focusables = getFocusable(root);
-      if (!focusables.length) { ev.preventDefault(); root.focus(); return; }
+      var trapEl = shOv || root;
+      var focusables = getFocusable(trapEl);
+      if (!focusables.length) { ev.preventDefault(); trapEl.focus(); return; }
       var first = focusables[0], lastEl = focusables[focusables.length - 1], cur = document.activeElement;
       if (ev.shiftKey) {
-        if (cur === first || cur === root || !root.contains(cur)) { ev.preventDefault(); lastEl.focus(); }
+        if (cur === first || cur === trapEl || !trapEl.contains(cur)) { ev.preventDefault(); lastEl.focus(); }
       } else {
-        if (cur === lastEl || !root.contains(cur)) { ev.preventDefault(); first.focus(); }
+        if (cur === lastEl || !trapEl.contains(cur)) { ev.preventDefault(); first.focus(); }
       }
+      return;
+    }
+    if (shOv) {
+      if (ev.key === "Escape") { ev.preventDefault(); closeShareSheet(); }
       return;
     }
     if (ev.key === "Escape") { if (state.v === "reader") showView("ep"); else if (state.v === "ep" || state.v === "bm") showView("home"); else close(); return; }
