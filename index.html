@@ -3,20 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Bardia Khosravi</title>
-    <meta name="description" content="Designing and improving processes — from the production line to the digital product." />
-    <meta property="og:title" content="Bardia Khosravi — Associate Product Manager & Industrial Engineer" />
-    <meta property="og:description" content="Designing and improving processes — from the production line to the digital product." />
+    <title>Bardia Khosravi — Associate Product Manager &amp; Industrial Engineer</title>
+    <meta name="description" content="Bardia Khosravi is an Associate Product Manager and Industrial Engineer in Tehran, designing and improving processes from the production line to digital products." />
+    <link rel="canonical" href="https://bardiakhosravi.ir/" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Bardia Khosravi" />
+    <meta property="og:url" content="https://bardiakhosravi.ir/" />
+    <meta property="og:title" content="Bardia Khosravi — Associate Product Manager &amp; Industrial Engineer" />
+    <meta property="og:description" content="Bardia Khosravi is an Associate Product Manager and Industrial Engineer in Tehran, designing and improving processes from the production line to digital products." />
+    <meta property="og:image" content="https://bardiakhosravi.ir/og-image.jpg" />
+    <meta property="og:image:alt" content="Bardia Khosravi — Associate Product Manager &amp; Industrial Engineer" />
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+    <meta name="twitter:title" content="Bardia Khosravi — Associate Product Manager &amp; Industrial Engineer" />
+    <meta name="twitter:description" content="Bardia Khosravi is an Associate Product Manager and Industrial Engineer in Tehran, designing and improving processes from the production line to digital products." />
+    <meta name="twitter:image" content="https://bardiakhosravi.ir/og-image.jpg" />
+
+    <!-- Favicons & Web Manifest -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/icons/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Preload hero poster so first paint never waits for hero-background.mp4 -->
+    <link rel="preload" as="image" href="/hero-poster.webp" fetchpriority="high" />
+
+    <!-- Self-hosted fonts (Almarai 300/400/700/800 + Instrument Serif 400 italic, font-display: swap) -->
+    <link rel="stylesheet" href="/fonts/fonts-home.css?v=1" />
+
     <script type="module" crossorigin src="/assets/index-v7Kq2mXa.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-v7Zr9pLd.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-v7Zr9pLd.css" />
     <style>
       img[src="/photo.webp"] { filter: none !important; }
-      /* Disable the message submission form inside the Connect modal while keeping direct Email & LinkedIn intact */
+
+      /* Paint hero poster immediately before video frames decode */
+      #hero video {
+        background: #000000 url('/hero-poster.webp') center / cover no-repeat;
+      }
+
+      /* Suppress non-functional contact form in compiled bundle while keeping direct Email & LinkedIn intact */
       .bg-\[\#121212\] form {
         display: none !important;
       }
@@ -29,19 +61,19 @@
         line-height: 1.6;
       }
 
-      /* Latest Writings section matching the dark ivory visual system */
-      #writings {
+      /* Latest Articles section matching the dark ivory visual system */
+      #articles {
         background-color: #000000;
         position: relative;
         padding: 5rem 1rem 7rem;
         overflow: hidden;
       }
       @media (min-width: 768px) {
-        #writings {
+        #articles {
           padding: 7rem 1.5rem 8.5rem;
         }
       }
-      .bk-writings-shell {
+      .bk-articles-shell {
         max-width: 80rem;
         margin: 0 auto;
         background-color: #101010;
@@ -52,17 +84,17 @@
         overflow: hidden;
       }
       @media (min-width: 640px) {
-        .bk-writings-shell {
+        .bk-articles-shell {
           padding: 3rem 2.25rem;
         }
       }
       @media (min-width: 768px) {
-        .bk-writings-shell {
+        .bk-articles-shell {
           border-radius: 2rem;
           padding: 4rem 3.5rem;
         }
       }
-      .bk-writings-glow {
+      .bk-articles-glow {
         position: absolute;
         top: 0;
         left: 50%;
@@ -74,7 +106,7 @@
         border-radius: 9999px;
         pointer-events: none;
       }
-      .bk-writings-header {
+      .bk-articles-header {
         position: relative;
         z-index: 1;
         display: flex;
@@ -87,12 +119,12 @@
         margin-bottom: 2rem;
       }
       @media (min-width: 768px) {
-        .bk-writings-header {
+        .bk-articles-header {
           flex-direction: row;
           align-items: flex-end;
         }
       }
-      .bk-writings-kicker {
+      .bk-articles-kicker {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
@@ -103,26 +135,21 @@
         color: rgba(222, 219, 200, 0.85);
         margin-bottom: 0.75rem;
       }
-      .bk-writings-dot {
+      .bk-articles-dot {
         width: 6px;
         height: 6px;
         border-radius: 9999px;
         background-color: #dedbc8;
       }
-      .bk-writings-title {
+      .bk-articles-title {
         color: #e1e0cc;
-        font-size: 1.85rem;
+        font-size: clamp(1.65rem, 5.2vw, 2.65rem);
         line-height: 1.15;
         font-weight: 400;
         letter-spacing: -0.02em;
         margin: 0;
       }
-      @media (min-width: 768px) {
-        .bk-writings-title {
-          font-size: 2.65rem;
-        }
-      }
-      .bk-writings-title-serif {
+      .bk-articles-title-serif {
         font-family: 'Instrument Serif', serif;
         font-style: italic;
         color: #dedbc8;
@@ -130,7 +157,7 @@
         margin-left: 0.2rem;
         font-size: 1.08em;
       }
-      .bk-writings-sub {
+      .bk-articles-sub {
         color: rgba(222, 219, 200, 0.72);
         font-size: 0.92rem;
         line-height: 1.65;
@@ -170,7 +197,7 @@
       .bk-archive-btn:hover .bk-archive-btn-icon {
         transform: scale(1.08);
       }
-      .bk-writings-grid {
+      .bk-articles-grid {
         position: relative;
         z-index: 1;
         display: grid;
@@ -178,7 +205,7 @@
         gap: 1rem;
       }
       @media (min-width: 768px) {
-        .bk-writings-grid {
+        .bk-articles-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 1.25rem;
         }
@@ -203,6 +230,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 0.75rem;
         margin-bottom: 1.15rem;
       }
@@ -251,6 +279,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 0.75rem;
       }
       .bk-card-cta {
@@ -270,7 +299,7 @@
         font-size: 0.68rem;
         color: #6b7280;
       }
-    
+
       /* ===== Cross-Device & Cross-Mobile-Browser Responsiveness ===== */
       html {
         -webkit-text-size-adjust: 100%;
@@ -287,7 +316,6 @@
       }
       button, a { touch-action: manipulation; }
 
-      /* iOS Safari backdrop-filter support & safe-area header */
       #root header {
         padding-top: env(safe-area-inset-top, 0px);
         padding-inline: max(0.5rem, env(safe-area-inset-left, 0px)) max(0.5rem, env(safe-area-inset-right, 0px));
@@ -301,7 +329,6 @@
       }
       #root header nav::-webkit-scrollbar { display: none; }
 
-      /* Dynamic viewport height for hero & modals on iOS Safari / Android Chrome / Samsung Internet */
       #root .min-h-screen {
         min-height: 100vh;
         min-height: 100svh;
@@ -313,179 +340,57 @@
         -webkit-overflow-scrolling: touch;
       }
 
-      /* Prevent stuck hover state on touch devices */
       @media (hover: none) {
         .bk-article-card:hover { transform: none; }
         .bk-archive-btn:hover { gap: 0.75rem; }
       }
 
-      /* Safe areas & small-phone (320px-480px) refinements for Latest Writings */
-      #writings {
+      #articles {
         padding-inline: max(0.85rem, env(safe-area-inset-left, 0px)) max(0.85rem, env(safe-area-inset-right, 0px));
       }
-      .bk-writings-title { font-size: clamp(1.65rem, 5.2vw, 2.65rem); }
-      .bk-card-top, .bk-card-footer { flex-wrap: wrap; }
       @media (max-width: 480px) {
-        #writings { padding-top: 3.25rem; padding-bottom: 4.5rem; }
-        .bk-writings-shell { padding: 1.5rem 1rem; border-radius: 1.15rem; }
+        #articles { padding-top: 3.25rem; padding-bottom: 4.5rem; }
+        .bk-articles-shell { padding: 1.5rem 1rem; border-radius: 1.15rem; }
         .bk-article-card { padding: 1.15rem; }
         .bk-archive-btn { width: 100%; justify-content: space-between; padding: 0.45rem 0.5rem 0.45rem 1.1rem; }
       }
       #root footer {
         padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px));
       }
-
-    
       @media (min-width: 1280px) {
-        .bk-writings-shell { max-width: 84rem; padding: 4.5rem 4rem; }
-        .bk-writings-grid { gap: 1.5rem; }
+        .bk-articles-shell { max-width: 84rem; padding: 4.5rem 4rem; }
+        .bk-articles-grid { gap: 1.5rem; }
       }
       @media (min-width: 1600px) {
-        .bk-writings-shell { max-width: 90rem; }
+        .bk-articles-shell { max-width: 90rem; }
       }
-
     </style>
-    <link rel="canonical" href="https://bardiakhosravi.ir/">
-</head>
+  </head>
   <body>
     <div id="root"></div>
+
+    <!-- Built directly into the page (populated synchronously from /articles-data.js) -->
+    <section id="articles" aria-label="Latest Articles">
+      <div class="bk-articles-shell">
+        <div class="bk-articles-glow" aria-hidden="true"></div>
+        <div class="bk-articles-header">
+          <div>
+            <div class="bk-articles-kicker"><span class="bk-articles-dot"></span><span>LATEST ARTICLES · ARCHIVE</span></div>
+            <h2 class="bk-articles-title">Latest <span class="bk-articles-title-serif">Articles</span></h2>
+            <p class="bk-articles-sub">Essays, literary studies, and standalone web editions published on this site.</p>
+          </div>
+          <a class="bk-archive-btn" href="/articles/">
+            <span>View All Articles</span>
+            <span class="bk-archive-btn-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </a>
+        </div>
+        <div class="bk-articles-grid" id="bk-articles-grid"></div>
+      </div>
+    </section>
+
     <script src="/articles-data.js?v=2"></script>
-    <script>
-      (function () {
-        var fallbackArticles = [
-          {
-            id: 'famous-persian-couplets',
-            number: '01',
-            badge: '01 / LITERATURE',
-            category: 'Persian Literature',
-            format: 'Analytical Guide · Persian',
-            title: 'Fifty Timeless Persian Couplets',
-            subtitle: 'From everyday proverbs to famous misreadings',
-            description: 'A structured exploration of 50 widely quoted Persian couplets by Saadi, Saeb, Hafez, Rumi, and Ferdowsi — complete with proverb frequency charts and commonly misread verses.',
-            url: '/famous-persian-couplets.html'
-          },
-          {
-            id: 'shahnameh',
-            number: '02',
-            badge: '02 / CLASSICS',
-            category: 'Classical Texts',
-            format: 'Complete Edition · Persian',
-            title: 'Shahnameh of Ferdowsi',
-            subtitle: 'Complete, structured & annotated web edition',
-            description: 'The complete epic text of Hakim Abolqasem Ferdowsi’s Shahnameh, organized with clean typography and readable structure for effortless browsing on the web.',
-            url: '/shahnameh.html'
-          }
-        ];
-
-        function escapeHtml(str) {
-          return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-        }
-
-        function buildWritingsSection() {
-          var articles = Array.isArray(window.SITE_ARTICLES) && window.SITE_ARTICLES.length
-            ? window.SITE_ARTICLES.slice(0, 4)
-            : fallbackArticles;
-
-          var cardsHtml = articles.map(function (item) {
-            return (
-              '<a class="bk-article-card" href="' + escapeHtml(item.url) + '">' +
-                '<div>' +
-                  '<div class="bk-card-top">' +
-                    '<span class="bk-card-badge">' + escapeHtml(item.badge) + '</span>' +
-                    '<span class="bk-card-cat">' + escapeHtml(item.category) + '</span>' +
-                  '</div>' +
-                  '<h3 class="bk-card-title">' + escapeHtml(item.title) + '</h3>' +
-                  (item.subtitle ? '<p class="bk-card-subtitle">' + escapeHtml(item.subtitle) + '</p>' : '') +
-                  '<p class="bk-card-desc">' + escapeHtml(item.description) + '</p>' +
-                '</div>' +
-                '<div class="bk-card-footer">' +
-                  '<span class="bk-card-cta">' +
-                    '<span>Read article</span>' +
-                    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>' +
-                  '</span>' +
-                  '<span class="bk-card-meta">' + escapeHtml(item.format || 'HTML') + '</span>' +
-                '</div>' +
-              '</a>'
-            );
-          }).join('');
-
-          var section = document.createElement('section');
-          section.id = 'writings';
-          section.setAttribute('aria-label', 'Latest Writings');
-          section.innerHTML =
-            '<div class="bk-writings-shell">' +
-              '<div class="bk-writings-glow" aria-hidden="true"></div>' +
-              '<div class="bk-writings-header">' +
-                '<div>' +
-                  '<div class="bk-writings-kicker"><span class="bk-writings-dot"></span><span>LATEST WRITINGS · ARCHIVE</span></div>' +
-                  '<h2 class="bk-writings-title">Latest <span class="bk-writings-title-serif">Writings</span></h2>' +
-                  '<p class="bk-writings-sub">Essays, literary studies, and standalone web editions published on this site.</p>' +
-                '</div>' +
-                '<a class="bk-archive-btn" href="/articles/">' +
-                  '<span>View All Articles</span>' +
-                  '<span class="bk-archive-btn-icon" aria-hidden="true">' +
-                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
-                  '</span>' +
-                '</a>' +
-              '</div>' +
-              '<div class="bk-writings-grid">' + cardsHtml + '</div>' +
-            '</div>';
-          return section;
-        }
-
-        function enhanceConnectModal() {
-          var forms = document.querySelectorAll('#root form');
-          forms.forEach(function (form) {
-            var modal = form.closest('.bg-\\[\\#121212\\]');
-            if (!modal) return;
-            if (!modal.querySelector('.bk-connect-note')) {
-              var note = document.createElement('p');
-              note.className = 'bk-connect-note';
-              note.textContent = 'Direct email or LinkedIn is the best way to reach me.';
-              form.parentNode.insertBefore(note, form);
-            }
-          });
-        }
-
-        function mountEnhancements() {
-          var footer = document.querySelector('#root footer');
-          if (footer && !document.getElementById('writings')) {
-            footer.parentNode.insertBefore(buildWritingsSection(), footer);
-          }
-
-          var nav = document.querySelector('#root header nav');
-          if (nav && !nav.querySelector('[data-bk-nav="writings"]')) {
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.setAttribute('data-bk-nav', 'writings');
-            btn.textContent = 'Writings';
-            btn.style.color = 'rgba(225, 224, 204, 0.8)';
-            btn.className = 'text-[10px] sm:text-xs md:text-sm font-normal tracking-wide transition-colors duration-200 cursor-pointer whitespace-nowrap focus:outline-none';
-            btn.addEventListener('mouseenter', function () { btn.style.color = '#E1E0CC'; });
-            btn.addEventListener('mouseleave', function () { btn.style.color = 'rgba(225, 224, 204, 0.8)'; });
-            btn.addEventListener('click', function () {
-              var target = document.getElementById('writings');
-              if (target) target.scrollIntoView({ behavior: 'smooth' });
-            });
-            var lastBtn = nav.lastElementChild;
-            if (lastBtn) {
-              nav.insertBefore(btn, lastBtn);
-            } else {
-              nav.appendChild(btn);
-            }
-          }
-
-          enhanceConnectModal();
-        }
-
-        mountEnhancements();
-        var observer = new MutationObserver(mountEnhancements);
-        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
-      })();
-    </script>
+    <script src="/home-enhancements.js?v=1"></script>
   </body>
 </html>
